@@ -321,7 +321,7 @@ function openExplosionModal(itemId) {
     mainDish.style.animation = 'shake 0.5s infinite';
 
     setTimeout(() => {
-        if (explosionActiveId !== itemId) return; // Guard clause if closed
+        if (explosionActiveId !== itemId) return;
         mainDish.style.animation = 'none';
 
         const radius = window.innerWidth < 768 ? 120 : 200;
@@ -336,10 +336,17 @@ function openExplosionModal(itemId) {
             const destX = Math.cos(angle) * radius;
             const destY = Math.sin(angle) * radius;
 
+            // Step 1: Explode Out
             setTimeout(() => {
                 particle.style.opacity = '1';
                 particle.style.transform = `translate(${destX}px, ${destY}px)`;
             }, 50);
+
+            // Step 2: Fade out particles as the list prepares to show
+            setTimeout(() => {
+                particle.style.opacity = '0';
+                particle.style.transform = `translate(${destX * 1.2}px, ${destY * 1.2}px) scale(0.5)`;
+            }, 1000);
 
             panel.innerHTML += `
                 <div class="ingredient-item">
@@ -349,7 +356,10 @@ function openExplosionModal(itemId) {
             `;
         });
 
-        setTimeout(() => panel.classList.add('show'), 500);
+        // Step 3: Show the detailed list panel
+        setTimeout(() => {
+            if (explosionActiveId === itemId) panel.classList.add('show');
+        }, 1200);
     }, 600);
 }
 
