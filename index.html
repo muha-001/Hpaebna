@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مطعم حبايبنا العالمي | Habaibna Restaurant</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="مطعم حبايبنا العالمي - طعم بغداد الأصيل في كل لقمة. نقدم أشهى المأكولات العراقية والشرقية والوجبات السريعة.">
+    <meta name="description"
+        content="مطعم حبايبنا العالمي - طعم بغداد الأصيل في كل لقمة. نقدم أشهى المأكولات العراقية والشرقية والوجبات السريعة.">
     <meta name="keywords" content="مطعم حبايبنا, مطعم عراقي, اكل شرقي, منسف, كباب عراقي, دليفري بغداد">
-    
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
+
     <!-- Custom Style -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <nav>
         <div class="menu-toggle" onclick="toggleMenu()">
             <i class="fas fa-bars"></i>
         </div>
-        
+
         <a href="#" class="logo">
             <i class="fas fa-utensils"></i> حبايبنا
         </a>
@@ -38,6 +43,10 @@
         </ul>
 
         <div class="nav-icons">
+            <div class="lang-switcher" onclick="toggleLanguage()">
+                <i class="fas fa-globe"></i>
+                <span id="langText">EN</span>
+            </div>
             <div class="cart-icon" onclick="toggleCart()">
                 <i class="fas fa-shopping-basket"></i>
                 <span class="cart-count">0</span>
@@ -57,16 +66,38 @@
     </header>
 
     <section id="menu" class="menu-section">
-        <h2 class="section-title">قائمة الطعام</h2>
-        
+        <h2 class="section-title" data-i18n="menu_title">قائمة الطعام</h2>
+
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="menuSearch" data-i18n-placeholder="search_placeholder"
+                placeholder="ابحث عن طبقك المفضل..." oninput="handleSearch()">
+        </div>
+
         <div class="menu-tabs">
-            <button class="tab-btn active" data-category="eastern">أطباق شرقية</button>
-            <button class="tab-btn" data-category="fastfood">وجبات سريعة</button>
-            <button class="tab-btn" data-category="desserts">حلويات ومشروبات</button>
+            <button class="tab-btn active" data-category="eastern" data-i18n="cat_eastern">أطباق شرقية</button>
+            <button class="tab-btn" data-category="fastfood" data-i18n="cat_fastfood">وجبات سريعة</button>
+            <button class="tab-btn" data-category="desserts" data-i18n="cat_desserts">حلويات ومشروبات</button>
         </div>
 
         <div class="menu-grid" id="menuGrid">
             <!-- سيتم تحميل الأصناف برمجياً -->
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <h2 class="section-title" data-i18n="gallery_title">معرض الصور</h2>
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Space for AI generated atmosphere images -->
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="reviews-section">
+        <h2 class="section-title" data-i18n="reviews_title">آراء الزبائن</h2>
+        <div class="reviews-container" id="reviewsContainer">
+            <!-- Testimonials will be here -->
         </div>
     </section>
 
@@ -82,7 +113,8 @@
                 <option>4</option>
                 <option>عائلة (5+)</option>
             </select>
-            <button class="btn primary" style="width: 100%;" onclick="alert('تم إرسال طلب الحجز بنجاح! سنتصل بك قريباً')">تأكيد الحجز</button>
+            <button class="btn primary" style="width: 100%;"
+                onclick="alert('تم إرسال طلب الحجز بنجاح! سنتصل بك قريباً')">تأكيد الحجز</button>
         </div>
     </section>
 
@@ -90,20 +122,28 @@
         <div class="footer-grid">
             <div>
                 <h3>مطعم حبايبنا</h3>
-                <p style="line-height: 1.8;">نقدم أشهى المأكولات العراقية والغربية بأجود المكونات. نسعد بخدمتكم في موقعنا المميز.</p>
+                <p style="line-height: 1.8;">نقدم أشهى المأكولات العراقية والغربية بأجود المكونات. نسعد بخدمتكم في
+                    موقعنا المميز.</p>
                 <div class="social-links" style="margin-top: 20px;">
                     <a href="https://www.facebook.com/habaybna97" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/habaibnaresturant?igsh=MTE0N3N1aXhxcXFxdw==" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/habaibnaresturant?igsh=MTE0N3N1aXhxcXFxdw==" target="_blank"><i
+                            class="fab fa-instagram"></i></a>
                     <a href="https://wa.me/9647706205459" target="_blank"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
-            
+
             <div>
                 <h3>تواصل معنا</h3>
-                <p style="margin-bottom: 10px;"><i class="fas fa-map-marker-alt" style="color: var(--primary-gold); margin-left: 10px;"></i> <a href="https://maps.app.goo.gl/8hnPRYm5NHbuTkjd9?g_st=ipc" target="_blank" style="color: #ccc; text-decoration: none;">موقع المطعم على خرائط جوجل</a></p>
-                <p style="margin-bottom: 10px;"><i class="fas fa-phone" style="color: var(--primary-gold); margin-left: 10px;"></i> 07706205459</p>
-                <p style="margin-bottom: 10px;"><i class="fas fa-phone-volume" style="color: var(--primary-gold); margin-left: 10px;"></i> الخط الساخن: 6120</p>
-                <p><i class="fas fa-clock" style="color: var(--primary-gold); margin-left: 10px;"></i> يومياً: 10 ص - 2 ص</p>
+                <p style="margin-bottom: 10px;"><i class="fas fa-map-marker-alt"
+                        style="color: var(--primary-gold); margin-left: 10px;"></i> <a
+                        href="https://maps.app.goo.gl/8hnPRYm5NHbuTkjd9?g_st=ipc" target="_blank"
+                        style="color: #ccc; text-decoration: none;">موقع المطعم على خرائط جوجل</a></p>
+                <p style="margin-bottom: 10px;"><i class="fas fa-phone"
+                        style="color: var(--primary-gold); margin-left: 10px;"></i> 07706205459</p>
+                <p style="margin-bottom: 10px;"><i class="fas fa-phone-volume"
+                        style="color: var(--primary-gold); margin-left: 10px;"></i> الخط الساخن: 6120</p>
+                <p><i class="fas fa-clock" style="color: var(--primary-gold); margin-left: 10px;"></i> يومياً: 10 ص - 2
+                    ص</p>
             </div>
 
             <div class="map-box" id="map"></div>
@@ -117,18 +157,22 @@
     <div class="explosion-modal" id="explosionModal">
         <div class="close-modal" onclick="closeModal()">&times;</div>
         <div class="explosion-container" id="explosionContainer">
-            <h2 id="modalTitle" style="color: var(--primary-gold); position: absolute; top: 10%; z-index: 20; font-size: 2.5rem; text-shadow: 0 0 10px #000;"></h2>
+            <h2 id="modalTitle"
+                style="color: var(--primary-gold); position: absolute; top: 10%; z-index: 20; font-size: 2.5rem; text-shadow: 0 0 10px #000;">
+            </h2>
             <div class="main-dish-view" id="mainDishView">
                 <img src="" alt="Dish" id="modalImg">
             </div>
             <div class="ingredients-list-panel" id="ingredientsPanel"></div>
-            <button class="btn primary" style="position: absolute; bottom: 120px; z-index: 20;" onclick="addToCartFromModal()">أضف للسلة</button>
+            <button class="btn primary" style="position: absolute; bottom: 120px; z-index: 20;"
+                onclick="addToCartFromModal()">أضف للسلة</button>
         </div>
     </div>
 
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-content" id="cartContent">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
                 <h3 style="color: var(--dark-brown);">سلة الطلبات</h3>
                 <div onclick="toggleCart()" style="cursor: pointer; font-size: 1.5rem;">&times;</div>
             </div>
@@ -155,7 +199,9 @@
 
     <div class="checkout-modal-overlay" id="checkoutModal">
         <div class="checkout-form-container">
-            <div onclick="closeCheckoutModal()" style="position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 1.5rem; color: #999;">&times;</div>
+            <div onclick="closeCheckoutModal()"
+                style="position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 1.5rem; color: #999;">
+                &times;</div>
             <h3 class="checkout-title">معلومات التوصيل</h3>
             <div class="checkout-input-group">
                 <label>الاسم الثلاثي:</label>
@@ -167,7 +213,8 @@
             </div>
             <div class="checkout-input-group">
                 <label>العنوان الدقيق:</label>
-                <input type="text" id="custAddress" class="checkout-input" placeholder="المنطقة - المحلة - الزقاق - الدار">
+                <input type="text" id="custAddress" class="checkout-input"
+                    placeholder="المنطقة - المحلة - الزقاق - الدار">
             </div>
             <div class="checkout-input-group">
                 <label>أقرب نقطة دالة:</label>
@@ -187,7 +234,8 @@
                     <span id="modalFinalTotal">0 د.ع</span>
                 </div>
             </div>
-            <button class="btn primary" style="width: 100%; background: #25D366; border-color: #25D366; color: #fff;" onclick="finalizeOrder()">
+            <button class="btn primary" style="width: 100%; background: #25D366; border-color: #25D366; color: #fff;"
+                onclick="finalizeOrder()">
                 <i class="fab fa-whatsapp" style="margin-left: 8px;"></i> إرسال الطلب عبر واتساب
             </button>
         </div>
@@ -197,4 +245,5 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
