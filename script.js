@@ -323,8 +323,19 @@ function finalizeOrder() {
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
 
-    if (!name || !phone || !address) {
-        showToast(currentLang === 'ar' ? "يرجى ملء البيانات" : "Please fill details");
+    // Advanced Validation
+    const phoneRegex = /^(07[3-9][0-9]{8}|009647[3-9][0-9]{8}|\+9647[3-9][0-9]{8})$/;
+
+    if (!name || name.length < 3) {
+        showToast(currentLang === 'ar' ? "يرجى إدخال الاسم الثلاثي بشكل صحيح" : "Please enter your full name correctly");
+        return;
+    }
+    if (!phoneRegex.test(phone)) {
+        showToast(currentLang === 'ar' ? "رقم الهاتف غير صحيح (يجب أن يبدأ بـ 07 وبطول 11 رقم)" : "Invalid phone number (must be 11 digits starting with 07)");
+        return;
+    }
+    if (!address || address.length < 10) {
+        showToast(currentLang === 'ar' ? "يرجى كتابة العنوان بشكل مفصل" : "Please write a detailed address");
         return;
     }
 
