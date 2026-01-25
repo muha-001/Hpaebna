@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم حبايبنا العالمي | Habaibna Restaurant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        /* === متغيرات الألوان والتصميم === */
+        :root {
+            --primary-gold: #D4AF37;       /* ذهبي فاخر */
+            --dark-gold: #B8941F;          /* ذهبي غامق */
+            --dark-brown: #3E2723;         /* بني غامق */
+            --light-brown: #5D4037;        /* بني فاتح */
+            --cream-bg: #FFF8E1;           /* كريمي للخلفية */
+            --light-cream: #FFFCF5;        /* كريمي فاتح */
+            --text-color: #2c2c2c;
+            --overlay-dark: rgba(20, 10, 5, 0.85);
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--cream-bg);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* === شريط التنقل === */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(62, 39, 35, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: var(--transition);
+        }
+
+        .logo {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-gold);
+            font-weight: 700;
+            text-decoration: none;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary-gold);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            right: 0;
+            background-color: var(--primary-gold);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cart-icon {
+            position: relative;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--primary-gold);
+            color: var(--dark-brown);
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* === القسم الترحيبي === */
+        header {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover fixed;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            color: #fff;
+            animation: fadeInUp 1s ease-out;
+            max-width: 1200px;
+            width: 90%;
+        }
+
+        .hero-title {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 5rem;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .category-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid var(--primary-gold);
+            background: transparent;
+            color: var(--primary-gold);
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn.primary {
+            background: var(--primary-gold);
+            color: var(--dark-brown);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn.primary:hover {
+            background: #fff;
+            border-color: #fff;
+            color: var(--dark-brown);
+        }
+
+        /* === قسم القائمة === */
+        .menu-section {
+            padding: 80px 5%;
+            background-color: var(--light-cream);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            color: var(--dark-brown);
+            margin-bottom: 50px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60%;
+            height: 4px;
+            background: var(--primary-gold);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .menu-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #555;
+        }
+
+        .tab-btn.active {
+            background: var(--dark-brown);
+            color: var(--primary-gold);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .dish-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+            cursor: pointer;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .dish-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: var(--primary-gold);
+        }
+
+        .dish-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .dish-card:hover .dish-img {
+            transform: scale(1.1);
+        }
+
+        .dish-info {
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+            background: #fff;
+        }
+
+        .dish-title {
+            font-size: 1.4rem;
+            color: var(--dark-brown);
+            margin-bottom: 5px;
+        }
+
+        .dish-desc {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .dish-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--dark-brown);
+        }
+
+        .rating {
+            color: #FFD700;
+        }
+
+        .add-btn {
+            background: var(--primary-gold);
+            color: var(--dark-brown);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .add-btn:hover {
+            background: var(--dark-brown);
+            color: var(--primary-gold);
+        }
+
+        /* === تأثير تفجير الطبق (Modal) === */
+        .explosion-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .explosion-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .explosion-container {
+            width: 90%;
+            max-width: 900px;
+            height: 80vh;
+            background: radial-gradient(circle, #2d2d2d 0%, #000 100%);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 50px;
+        }
+
+        .main-dish-view {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            transition: all 0.5s ease;
+            z-index: 10;
+        }
+
+        .main-dish-view img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
+            border: 4px solid var(--primary-gold);
+        }
+
+        .ingredient-particle {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            z-index: 5;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .ingredients-list-panel {
+            width: 100%;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            border-top: 1px solid var(--primary-gold);
+            transform: translateY(100%);
+            transition: transform 0.5s ease 0.5s;
+        }
+
+        .ingredients-list-panel.show {
+            transform: translateY(0);
+        }
+
+        .ingredient-item {
+            text-align: center;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        /* === معلومات التواصل والفوتر === */
+        .footer {
+            background-color: var(--dark-brown);
+            color: #fff;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-col h3 {
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 50%;
+            margin-left: 10px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background: var(--primary-gold);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* === نماذج الحجز === */
+        .reservation-section {
+            background: linear-gradient(rgba(62,39,35,0.9), rgba(62,39,35,0.9)), url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            padding: 80px 20px;
+            color: #fff;
+        }
+
+        .reservation-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.05);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* خريطة */
+        .map-container {
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+            border: 2px solid var(--primary-gold);
+        }
+
+        /* رسالة تأكيد */
+        .confirmation-message {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--primary-gold);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0); }
+            25% { transform: translate(-52%, -50%) rotate(-5deg); }
+            75% { transform: translate(-48%, -50%) rotate(5deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.4rem;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .explosion-container {
+                height: 70vh;
+            }
+            
+            .main-dish-view {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">حبايبنا</a>
+        <ul class="nav-links">
+            <li><a href="#home" class="active">الرئيسية</a></li>
+            <li><a href="#menu">القائمة</a></li>
+            <li><a href="#reservation">حجز طاولة</a></li>
+            <li><a href="#contact">تواصل معنا</a></li>
+        </ul>
+        <div class="cart-icon" onclick="toggleCart()">
+            <i class="fas fa-shopping-basket"></i>
+            <span class="cart-count">0</span>
+        </div>
+    </nav>
+
+    <header id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">مطعم حبايبنا العالمي</h1>
+            <p class="hero-subtitle">النكهة العراقية الأصيلة بلمسة عالمية فاخرة<br>من قلب بغداد إلى العالم، نقدم لكم تجربة طعام لا تُنسى تجمع بين الأصالة والمعاصرة</p>
+            <div class="category-buttons">
+                <button class="btn primary" onclick="scrollToMenu('eastern')">الأطباق الشرقية</button>
+                <button class="btn" onclick="scrollToMenu('fastfood')">الوجبات السريعة</button>
+                <button class="btn" onclick="scrollToMenu('desserts')">الحلويات</button>
+            </div>
+            <p style="margin-top: 20px; font-size: 1.2rem; color: var(--primary-gold);">
+                <i class="fas fa-bolt" style="margin-left: 10px;"></i>للطلب السريع: <strong style="font-size: 1.4rem;">6120</strong> ⚡ (توصيل خلال 30 دقيقة)
+            </p>
+        </div>
+    </header>
+
+    <section id="menu" class="menu-section">
+        <h2 class="section-title">قائمة الطعام الفاخرة</h2>
+        
+        <div class="menu-tabs">
+            <button class="tab-btn active" data-category="eastern">أطباق شرقية</button>
+            <button class="tab-btn" data-category="fastfood">وجبات سريعة</button>
+            <button class="tab-btn" data-category="desserts">حلويات</button>
+        </div>
+
+        <div class="menu-grid" id="menuGrid">
+            <!-- سيتم تعبئة الأطباق هنا بالجافاسكريبت -->
+        </div>
+    </section>
+
+    <section id="reservation" class="reservation-section">
+        <h2 class="section-title" style="color: #fff;">احجز طاولتك</h2>
+        <div class="reservation-form">
+            <div class="form-group">
+                <input type="text" class="form-control" id="reservationName" placeholder="الاسم الكريم">
+            </div>
+            <div class="form-group">
+                <input type="tel" class="form-control" id="reservationPhone" placeholder="رقم الهاتف">
+            </div>
+            <div class="form-group">
+                <input type="date" class="form-control" id="reservationDate">
+            </div>
+            <div class="form-group">
+                <select class="form-control" id="reservationGuests">
+                    <option value="">عدد الأشخاص</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="6">6</option>
+                    <option value="8">عائلة كبيرة (8+)</option>
+                </select>
+            </div>
+            <button class="btn primary" style="width: 100%;" onclick="makeReservation()">تأكيد الحجز</button>
+            <div class="confirmation-message" id="reservationConfirmation">
+                تم إرسال طلب حجز الطاولة بنجاح! سوف نتصل بك قريباً لتأكيد الحجز.
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <a href="#" class="logo">حبايبنا</a>
+                <p style="margin-top: 20px; line-height: 1.6;">
+                    من قلب بغداد إلى العالم، نقدم لكم تجربة طعام لا تُنسى تجمع بين الأصالة والمعاصرة.
+                </p>
+                <div class="map-container" id="map"></div>
+            </div>
+            
+            <div class="footer-col contact-info">
+                <h3>تواصل معنا</h3>
+                <p><i class="fas fa-map-marker-alt" style="color: var(--primary-gold);"></i> بغداد / طالبية - قرب جسر القناة</p>
+                <p><i class="fas fa-phone-alt" style="color: var(--primary-gold);"></i> 6120 (الخط الساخن)</p>
+                <p><i class="fas fa-clock" style="color: var(--primary-gold);"></i> مفتوح يومياً 10:00 صباحاً - 2:00 ليلاً</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/habaibnaresturant?igsh=MTE0N3N1aXhxcXFxdw==" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/habaybna97?" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://wa.me/9646120" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h3>خدماتنا</h3>
+                <p><i class="fas fa-shipping-fast" style="color: var(--primary-gold); margin-left: 10px;"></i>توصيل سريع خلال 30 دقيقة</p>
+                <p><i class="fas fa-utensils" style="color: var(--primary-gold); margin-left: 10px;"></i>حجز طاولات في المطعم</p>
+                <p><i class="fas fa-calendar-alt" style="color: var(--primary-gold); margin-left: 10px;"></i>استقبال حفلات ومناسبات</p>
+                <p><i class="fas fa-gift" style="color: var(--primary-gold); margin-left: 10px;"></i>خصومات للمجموعات الكبيرة</p>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2024 مطعم حبايبنا العالمي. جميع الحقوق محفوظة.
+        </div>
+    </footer>
+
+    <!-- نافذة تفجير الطبق -->
+    <div class="explosion-modal" id="explosionModal">
+        <div class="close-modal" onclick="closeModal()">&times;</div>
+        <div class="explosion-container" id="explosionContainer">
+            <div class="main-dish-view" id="mainDishView">
+                <img src="" alt="Dish" id="modalImg">
+            </div>
+            <h2 id="modalTitle" style="color: var(--primary-gold); position: absolute; top: 15%; z-index: 5; font-size: 2.5rem; text-shadow: 0 0 10px #000;"></h2>
+            <div class="ingredients-list-panel" id="ingredientsPanel">
+                <!-- سيتم تعبئة المكونات هنا بالجافاسكريبت -->
+            </div>
+            <button class="btn primary" style="position: absolute; bottom: 170px; z-index: 20;" onclick="addToCartFromModal()">أضف للسلة</button>
+        </div>
+    </div>
+
+    <!-- سلة التسوق -->
+    <div class="cart-sidebar" id="cartSidebar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1500; justify-content: flex-end;">
+        <div style="background: white; width: 90%; max-width: 400px; height: 100%; padding: 20px; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: var(--dark-brown);">سلة الطلبات</h3>
+                <button onclick="toggleCart()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="cartItems">
+                <!-- سيتم تعبئة عناصر السلة هنا -->
+            </div>
+            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span>المجموع:</span>
+                    <span id="cartTotal">0 د.ع</span>
+                </div>
+                <button class="btn primary" style="width: 100%;" onclick="checkout()">اتمام الطلب</button>
+                <p style="text-align: center; margin-top: 15px; color: #666; font-size: 0.9rem;">للاستفسار أو الطلب المباشر اتصل على 6120</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // === بيانات القائمة (30 صنف) ===
+        const menuItems = [
+            // الأطباق الشرقية (10 أصناف)
+            { id: 1, category: 'eastern', name: 'منسف حبايبنا الفاخر', price: '25,000', img: 'https://images.unsplash.com/photo-1606756627038-164775d0458d?auto=format&fit=crop&w=800', desc: 'لحم ضأن مع الأرز البسمتي والجميد', ingredients: [{n:'لحم ضأن', i:'🍖'}, {n:'أرز بسمتي', i:'🍚'}, {n:'جميد كركي', i:'🥛'}, {n:'مكسرات', i:'🥜'}, {n:'بهارات', i:'🧂'}] },
+            { id: 2, category: 'eastern', name: 'كباب عراقي مشوي', price: '18,000', img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800', desc: 'خليط خاص من اللحم والتوابل', ingredients: [{n:'لحم مفروم', i:'🥩'}, {n:'بصل', i:'🧅'}, {n:'سماق', i:'🧂'}, {n:'بهارات', i:'🌶️'}, {n:'خبز تنور', i:'🫓'}] },
+            { id: 3, category: 'eastern', name: 'قوزي حبايبنا', price: '30,000', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800', desc: 'لحم ضأن محشو بالأرز والمكسرات', ingredients: [{n:'كتف خروف', i:'🍖'}, {n:'أرز مبهر', i:'🍚'}, {n:'لوز وكشمش', i:'🍇'}, {n:'مكسرات', i:'🥜'}, {n:'بهارات', i:'🌶️'}] },
+            { id: 4, category: 'eastern', name: 'دولمة أوراق العنب', price: '15,000', img: 'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?auto=format&fit=crop&w=800', desc: 'محشي باللحم والأرز', ingredients: [{n:'ورق عنب', i:'🍃'}, {n:'لحم', i:'🥩'}, {n:'أرز', i:'🍚'}, {n:'ليمون', i:'🍋'}, {n:'نعناع', i:'🌿'}] },
+            { id: 5, category: 'eastern', name: 'سمك مسكوف عراقي', price: '35,000', img: 'https://images.unsplash.com/photo-1544025162-d76690b609aa?auto=format&fit=crop&w=800', desc: 'سمك مشوي على الفحم', ingredients: [{n:'سمك شبوط', i:'🐟'}, {n:'ملح خشن', i:'🧂'}, {n:'ليمون', i:'🍋'}, {n:'طماطم', i:'🍅'}, {n:'بصل', i:'🧅'}] },
+            { id: 6, category: 'eastern', name: 'بامية حبايبنا', price: '12,000', img: 'https://images.unsplash.com/photo-1628151016664-d65275069904?auto=format&fit=crop&w=800', desc: 'بامية مع لحم الضأن', ingredients: [{n:'بامية', i:'🥗'}, {n:'لحم ضأن', i:'🍖'}, {n:'ثوم', i:'🧄'}, {n:'طماطم', i:'🍅'}, {n:'بهارات', i:'🧂'}] },
+            { id: 7, category: 'eastern', name: 'كبة حلبية', price: '10,000', img: 'https://images.unsplash.com/photo-1598514983318-2f64f8f4796c?auto=format&fit=crop&w=800', desc: 'كبة مقلية محشية باللحم', ingredients: [{n:'برغل', i:'🌾'}, {n:'لحم', i:'🥩'}, {n:'صنوبر', i:'🌲'}, {n:'بهارات', i:'🧂'}, {n:'بصل', i:'🧅'}] },
+            { id: 8, category: 'eastern', name: 'محشي الكوسا', price: '14,000', img: 'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=800', desc: 'كوسا محشية باللحم والأرز', ingredients: [{n:'كوسا', i:'🥒'}, {n:'أرز', i:'🍚'}, {n:'لحم', i:'🥩'}, {n:'نعناع', i:'🌿'}, {n:'صوص طماطم', i:'🍅'}] },
+            { id: 9, category: 'eastern', name: 'طاجن الدجاج بالبرتقال', price: '20,000', img: 'https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=800', desc: 'دجاج مطهو مع البرتقال والبهارات', ingredients: [{n:'دجاج', i:'🍗'}, {n:'برتقال', i:'🍊'}, {n:'زعفران', i:'🌺'}, {n:'خضار', i:'🥕'}, {n:'بهارات', i:'🧂'}] },
+            { id: 10, category: 'eastern', name: 'رز باللحم والخضراوات', price: '16,000', img: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=800', desc: 'أرز مع لحم وخضار مشكلة', ingredients: [{n:'أرز', i:'🍚'}, {n:'لحم', i:'🥩'}, {n:'خضار مشكل', i:'🥦'}, {n:'مرق', i:'🍲'}, {n:'بهارات', i:'🧂'}] },
+
+            // الوجبات السريعة (10 أصناف)
+            { id: 11, category: 'fastfood', name: 'برجر حبايبنا الخاص', price: '12,000', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800', desc: 'برجر لحم بقري مع جبنة شيدر', ingredients: [{n:'لحم بقري', i:'🥩'}, {n:'جبن شيدر', i:'🧀'}, {n:'صوص خاص', i:'🏺'}, {n:'خس', i:'🥬'}, {n:'طماطم', i:'🍅'}] },
+            { id: 12, category: 'fastfood', name: 'شاورما دجاج', price: '8,000', img: 'https://images.unsplash.com/photo-1619860860774-1e2e17343432?auto=format&fit=crop&w=800', desc: 'شاورما دجاج مع الخضار والصلصة', ingredients: [{n:'دجاج', i:'🍗'}, {n:'ثومية', i:'🧄'}, {n:'مخلل', i:'🥒'}, {n:'خس', i:'🥬'}, {n:'خبز', i:'🫓'}] },
+            { id: 13, category: 'fastfood', name: 'بيتزا حبايبنا', price: '15,000', img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=800', desc: 'بيتزا بإضافات عراقية', ingredients: [{n:'عجين', i:'🍕'}, {n:'سجق', i:'🥓'}, {n:'جبن', i:'🧀'}, {n:'فلفل', i:'🌶️'}, {n:'زيتون', i:'🫒'}] },
+            { id: 14, category: 'fastfood', name: 'ساندويتش كباب', price: '7,000', img: 'https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=800', desc: 'كباب في خبز عربي', ingredients: [{n:'كباب', i:'🍢'}, {n:'طحينة', i:'🥣'}, {n:'بصل', i:'🧅'}, {n:'سماق', i:'🧂'}, {n:'خبز عربي', i:'🫓'}] },
+            { id: 15, category: 'fastfood', name: 'بطاطس حبايبنا المقرمشة', price: '5,000', img: 'https://images.unsplash.com/photo-1573080496987-a199f8cd75ec?auto=format&fit=crop&w=800', desc: 'بطاطس مقلية بتتبيلة خاصة', ingredients: [{n:'بطاطس', i:'🍟'}, {n:'بابريكا', i:'🌶️'}, {n:'ملح', i:'🧂'}, {n:'صوص خاص', i:'🥣'}, {n:'بهارات', i:'🧂'}] },
+            { id: 16, category: 'fastfood', name: 'دجاج مقلي', price: '18,000', img: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=800', desc: 'دجاج مقلي مع البطاطس', ingredients: [{n:'دجاج', i:'🍗'}, {n:'قسماط', i:'🍞'}, {n:'بهارات', i:'🧂'}, {n:'بطاطس', i:'🍟'}, {n:'صوص', i:'🥣'}] },
+            { id: 17, category: 'fastfood', name: 'هوت دوج حبايبنا', price: '8,000', img: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=800', desc: 'هوت دوج مع الصلصة العراقية', ingredients: [{n:'نقانق', i:'🌭'}, {n:'خردل', i:'🟡'}, {n:'كاتشب', i:'🍅'}, {n:'بصل مقلي', i:'🧅'}, {n:'صلصة عراقية', i:'🏺'}] },
+            { id: 18, category: 'fastfood', name: 'ساندويتش فلافل', price: '3,000', img: 'https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?auto=format&fit=crop&w=800', desc: 'فلافل مع الحمص والطحينة', ingredients: [{n:'فلافل', i:'🧆'}, {n:'حمص', i:'🥜'}, {n:'طحينة', i:'🥣'}, {n:'سلطة', i:'🥗'}, {n:'خبز', i:'🫓'}] },
+            { id: 19, category: 'fastfood', name: 'تشيكن برجر', price: '10,000', img: 'https://images.unsplash.com/photo-1513442542250-854d436a73f2?auto=format&fit=crop&w=800', desc: 'برجر دجاج مع الخس والطماطم', ingredients: [{n:'دجاج', i:'🍗'}, {n:'خس', i:'🥬'}, {n:'طماطم', i:'🍅'}, {n:'مايونيز', i:'⚪'}, {n:'خبز', i:'🍞'}] },
+            { id: 20, category: 'fastfood', name: 'ناجتس دجاج', price: '8,000', img: 'https://images.unsplash.com/photo-1562967960-f0b62153202e?auto=format&fit=crop&w=800', desc: 'قطع دجاج مقلية مقرمشة', ingredients: [{n:'دجاج', i:'🍗'}, {n:'بقسماط', i:'🍞'}, {n:'صوص عسل', i:'🍯'}, {n:'بهارات', i:'🧂'}, {n:'بطاطس', i:'🍟'}] },
+
+            // الحلويات (10 أصناف)
+            { id: 21, category: 'desserts', name: 'كنافة حبايبنا', price: '8,000', img: 'https://images.unsplash.com/photo-1576777647209-e8733d7b851d?auto=format&fit=crop&w=800', desc: 'كنافة بالجبنة والقشطة', ingredients: [{n:'عجينة كنافة', i:'🥧'}, {n:'جبن نابلسي', i:'🧀'}, {n:'قشطة', i:'🥛'}, {n:'قطر', i:'🍯'}, {n:'فستق', i:'🥜'}] },
+            { id: 22, category: 'desserts', name: 'بسبوسة بالقشطة', price: '5,000', img: 'https://images.unsplash.com/photo-1621236378699-8597faf6a176?auto=format&fit=crop&w=800', desc: 'بسبوسة مع قشطة وسمسم', ingredients: [{n:'سميد', i:'🌾'}, {n:'قشطة', i:'🥛'}, {n:'جوز هند', i:'🥥'}, {n:'لوز', i:'🥜'}, {n:'سمسم', i:'🌱'}] },
+            { id: 23, category: 'desserts', name: 'أم علي حبايبنا', price: '7,000', img: 'https://images.unsplash.com/photo-1549557452-167823db2e42?auto=format&fit=crop&w=800', desc: 'أم علي بالقشطة والمكسرات', ingredients: [{n:'رقائق', i:'🥐'}, {n:'حليب ساخن', i:'🥛'}, {n:'قشطة', i:'🥛'}, {n:'زبيب', i:'🍇'}, {n:'مكسرات', i:'🥜'}] },
+            { id: 24, category: 'desserts', name: 'زلابية بالقشطة', price: '4,000', img: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800', desc: 'زلابية محشوة بالقشطة', ingredients: [{n:'عجين مقلي', i:'🥨'}, {n:'قطر', i:'🍯'}, {n:'قشطة', i:'🥛'}, {n:'هيل', i:'🌿'}, {n:'ماء ورد', i:'🌹'}] },
+            { id: 25, category: 'desserts', name: 'هريس حبايبنا', price: '6,000', img: 'https://images.unsplash.com/photo-1512353087810-25dfcd100962?auto=format&fit=crop&w=800', desc: 'هريس مع السمن والهيل', ingredients: [{n:'قمح', i:'🌾'}, {n:'سمن', i:'🧈'}, {n:'سكر', i:'🍚'}, {n:'هيل', i:'🌿'}, {n:'قرفة', i:'🤎'}] },
+            { id: 26, category: 'desserts', name: 'تشيز كيك عراقي', price: '9,000', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800', desc: 'تشيز كيك بنكهة عراقية', ingredients: [{n:'جبن كريمي', i:'🧀'}, {n:'تمر', i:'🌴'}, {n:'بسكويت', i:'🍪'}, {n:'دبس', i:'🍯'}, {n:'مكسرات', i:'🥜'}] },
+            { id: 27, category: 'desserts', name: 'قطايف محشية', price: '5,000', img: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?auto=format&fit=crop&w=800', desc: 'قطايف محشية بالقشطة أو الجوز', ingredients: [{n:'عجينة', i:'🥞'}, {n:'جوز', i:'🥜'}, {n:'قشطة', i:'🥛'}, {n:'عسل', i:'🍯'}, {n:'قرفة', i:'🤎'}] },
+            { id: 28, category: 'desserts', name: 'ميلك شيك حبايبنا', price: '6,000', img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=800', desc: 'ميلك شيك بنكهات عراقية', ingredients: [{n:'حليب', i:'🥛'}, {n:'آيس كريم', i:'🍦'}, {n:'تمر', i:'🌴'}, {n:'مكسرات', i:'🥜'}, {n:'كريمة', i:'☁️'}] },
+            { id: 29, category: 'desserts', name: 'آيس كريم زعفران', price: '7,000', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800', desc: 'آيس كريم بنكهة الزعفران', ingredients: [{n:'حليب', i:'🥛'}, {n:'زعفران', i:'🌺'}, {n:'فستق', i:'🥜'}, {n:'ماء ورد', i:'🌹'}, {n:'كريمة', i:'☁️'}] },
+            { id: 30, category: 'desserts', name: 'معجنات بالقشطة', price: '4,000', img: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?auto=format&fit=crop&w=800', desc: 'معجنات محشية بالقشطة', ingredients: [{n:'عجين مورق', i:'🥐'}, {n:'قشطة', i:'🥛'}, {n:'سكر بودرة', i:'❄️'}, {n:'فانيلا', i:'🌼'}, {n:'ماء زهر', i:'🌷'}] }
+        ];
+
+        let cartCount = 0;
+        let cartItems = [];
+        let cartTotal = 0;
+
+        // === دالة تهيئة القائمة ===
+        function renderMenu(filter = 'eastern') {
+            const grid = document.getElementById('menuGrid');
+            grid.innerHTML = '';
+            
+            const filteredItems = menuItems.filter(item => item.category === filter);
+            
+            filteredItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'dish-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.onclick = (e) => {
+                    if(!e.target.classList.contains('add-btn')) {
+                        openExplosionModal(item);
+                    }
+                };
+                
+                card.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}" class="dish-img">
+                    <div class="dish-info">
+                        <h3 class="dish-title">${item.name}</h3>
+                        <p class="dish-desc">${item.desc}</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="dish-footer">
+                            <span class="price">${item.price} د.ع</span>
+                            <button class="add-btn" onclick="addToCart(${item.id})"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // === تبديل الأقسام ===
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderMenu(this.dataset.category);
+            });
+        });
+
+        // === منطق "تفجير الطبق" ===
+        function openExplosionModal(item) {
+            const modal = document.getElementById('explosionModal');
+            const mainDish = document.getElementById('mainDishView');
+            const img = document.getElementById('modalImg');
+            const title = document.getElementById('modalTitle');
+            const panel = document.getElementById('ingredientsPanel');
+            const container = document.getElementById('explosionContainer');
+
+            // إزالة الجزيئات القديمة
+            document.querySelectorAll('.ingredient-particle').forEach(el => el.remove());
+
+            img.src = item.img;
+            title.innerText = item.name;
+            panel.innerHTML = '';
+            panel.classList.remove('show');
+            modal.classList.add('active');
+
+            // تأثير اهتزاز الطبق قبل الانفجار
+            mainDish.style.animation = 'shake 0.5s infinite';
+
+            setTimeout(() => {
+                mainDish.style.animation = 'none';
+                explodeIngredients(item.ingredients, container);
+                
+                // إضافة المكونات إلى اللوحة السفلية
+                item.ingredients.forEach(ing => {
+                    panel.innerHTML += `
+                        <div class="ingredient-item">
+                            <div style="font-size: 2rem;">${ing.i}</div>
+                            <div>${ing.n}</div>
+                        </div>
+                    `;
+                });
+                
+                // إظهار اللوحة
+                setTimeout(() => panel.classList.add('show'), 800);
+            }, 600);
+        }
+
+        function explodeIngredients(ingredients, container) {
+            const centerX = container.clientWidth / 2;
+            const centerY = container.clientHeight / 2;
+            const radius = 200; // مسافة الانفجار
+
+            ingredients.forEach((ing, i) => {
+                const particle = document.createElement('div');
+                particle.className = 'ingredient-particle';
+                particle.innerText = ing.i;
+                
+                // الموضع الأولي (الوسط)
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                
+                container.appendChild(particle);
+
+                // حساب زاوية الانفجار
+                const angle = (i * (360 / ingredients.length)) * (Math.PI / 180);
+                const destX = centerX + Math.cos(angle) * radius;
+                const destY = centerY + Math.sin(angle) * radius;
+
+                // تحريك الجزيء
+                setTimeout(() => {
+                    particle.style.opacity = '1';
+                    particle.style.transform = `translate(${destX - centerX}px, ${destY - centerY}px)`;
+                }, 50);
+
+                // نقل الجزيء إلى الأسفل بعد الانفجار
+                setTimeout(() => {
+                    particle.style.transition = 'all 0.6s ease';
+                    particle.style.top = '90%'; // تحريك نحو اللوحة السفلية
+                    particle.style.left = (centerX + (i - ingredients.length/2) * 60) + 'px'; // توزيع أفقي
+                    particle.style.opacity = '0'; // اختفاء تدريجي
+                }, 1000);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('explosionModal').classList.remove('active');
+        }
+
+        // === السلة ===
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item) return;
+            
+            // تحقق إذا كان المنتج موجوداً بالفعل في السلة
+            const existingItem = cartItems.find(i => i.id === itemId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cartItems.push({
+                    ...item,
+                    quantity: 1
+                });
+            }
+            
+            cartCount++;
+            document.querySelector('.cart-count').innerText = cartCount;
+            
+            // تحديث المجموع
+            updateCartTotal();
+            
+            // تأثير حركي للزر
+            const addButton = event.target.closest('.add-btn');
+            if (addButton) {
+                addButton.innerHTML = '<i class="fas fa-check"></i>';
+                addButton.style.backgroundColor = 'green';
+                setTimeout(() => {
+                    addButton.innerHTML = '<i class="fas fa-plus"></i>';
+                    addButton.style.backgroundColor = '';
+                }, 1000);
+            }
+            
+            // تحديث عرض السلة إذا كانت مفتوحة
+            if (document.getElementById('cartSidebar').style.display === 'flex') {
+                renderCartItems();
+            }
+        }
+
+        function addToCartFromModal() {
+            // الحصول على اسم الطبق من العنوان
+            const itemName = document.getElementById('modalTitle').innerText;
+            const item = menuItems.find(i => i.name === itemName);
+            if (item) {
+                addToCart(item.id);
+                closeModal();
+                alert('تمت إضافة الوجبة للسلة بنجاح!');
+            }
+        }
+
+        function toggleCart() {
+            const cartSidebar = document.getElementById('cartSidebar');
+            if (cartSidebar.style.display === 'flex') {
+                cartSidebar.style.display = 'none';
+            } else {
+                cartSidebar.style.display = 'flex';
+                renderCartItems();
+            }
+        }
+
+        function renderCartItems() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            if (cartItems.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align: center; color: #777;">السلة فارغة</p>';
+                return;
+            }
+            
+            let itemsHtml = '';
+            cartItems.forEach(item => {
+                const priceNum = parseInt(item.price.replace(/,/g, ''));
+                itemsHtml += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <div>
+                            <div style="font-weight: bold;">${item.name}</div>
+                            <div style="font-size: 0.9rem; color: #666;">${item.price} د.ع</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button onclick="updateCartItemQuantity(${item.id}, -1)" style="background: #f0f0f0; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;">-</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="updateCartItemQuantity(${item.id}, 1)" style="background: #f0f0f0; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;">+</button>
+                            <button onclick="removeCartItem(${item.id})" style="background: none; border: none; color: #ff4444; cursor: pointer; margin-right: 10px;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cartItemsContainer.innerHTML = itemsHtml;
+            updateCartTotal();
+        }
+
+        function updateCartItemQuantity(itemId, change) {
+            const itemIndex = cartItems.findIndex(i => i.id === itemId);
+            if (itemIndex === -1) return;
+            
+            cartItems[itemIndex].quantity += change;
+            
+            if (cartItems[itemIndex].quantity <= 0) {
+                cartItems.splice(itemIndex, 1);
+            }
+            
+            // تحديث عدد العناصر في السلة
+            cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+            document.querySelector('.cart-count').innerText = cartCount;
+            
+            renderCartItems();
+        }
+
+        function removeCartItem(itemId) {
+            const itemIndex = cartItems.findIndex(i => i.id === itemId);
+            if (itemIndex === -1) return;
+            
+            // تحديث عدد العناصر في السلة
+            cartCount -= cartItems[itemIndex].quantity;
+            document.querySelector('.cart-count').innerText = cartCount;
+            
+            cartItems.splice(itemIndex, 1);
+            renderCartItems();
+        }
+
+        function updateCartTotal() {
+            cartTotal = cartItems.reduce((total, item) => {
+                const priceNum = parseInt(item.price.replace(/,/g, ''));
+                return total + (priceNum * item.quantity);
+            }, 0);
+            
+            document.getElementById('cartTotal').innerText = cartTotal.toLocaleString() + ' د.ع';
+        }
+
+        function checkout() {
+            if (cartItems.length === 0) {
+                alert('السلة فارغة! أضف بعض الأطباق أولاً.');
+                return;
+            }
+            
+            const orderDetails = cartItems.map(item => `${item.name} (${item.quantity}x)`).join('\n');
+            const message = `طلب جديد من مطعم حبايبنا:\n\n${orderDetails}\n\nالمجموع: ${cartTotal.toLocaleString()} د.ع\n\nرقم الهاتف: ${document.getElementById('reservationPhone').value || 'لم يتم تقديمه'}`;
+            
+            // هنا يمكن إضافة منطق إرسال الطلب إلى الخادم
+            alert(`تم إرسال طلبك بنجاح! سوف نتصل بك قريباً.\n\nتفاصيل الطلب:\n${message}`);
+            
+            // تفريغ السلة بعد إتمام الطلب
+            cartItems = [];
+            cartCount = 0;
+            cartTotal = 0;
+            document.querySelector('.cart-count').innerText = '0';
+            renderCartItems();
+            toggleCart();
+        }
+
+        // === حجز الطاولة ===
+        function makeReservation() {
+            const name = document.getElementById('reservationName').value;
+            const phone = document.getElementById('reservationPhone').value;
+            const date = document.getElementById('reservationDate').value;
+            const guests = document.getElementById('reservationGuests').value;
+            
+            if (!name || !phone || !date || !guests) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            // إظهار رسالة التأكيد
+            const confirmation = document.getElementById('reservationConfirmation');
+            confirmation.style.display = 'block';
+            
+            // إعادة تعيين النموذج
+            document.getElementById('reservationName').value = '';
+            document.getElementById('reservationPhone').value = '';
+            document.getElementById('reservationDate').value = '';
+            document.getElementById('reservationGuests').value = '';
+            
+            // إخفاء رسالة التأكيد بعد 5 ثوان
+            setTimeout(() => {
+                confirmation.style.display = 'none';
+            }, 5000);
+            
+            // هنا يمكن إضافة منطق إرسال بيانات الحجز إلى الخادم
+            console.log('حجز جديد:', { name, phone, date, guests });
+        }
+
+        // === التمرير السلس ===
+        function scrollToMenu(category) {
+            const section = document.getElementById('menu');
+            section.scrollIntoView({ behavior: 'smooth' });
+            
+            // تفعيل التبويب المناسب
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if(btn.dataset.category === category) {
+                    btn.click();
+                }
+            });
+        }
+
+        // === خريطة جوجل ===
+        function initMap() {
+            // إحداثيات تقريبية لمنطقة طالبية بغداد
+            const map = L.map('map').setView([33.2864, 44.3822], 15);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            L.marker([33.2864, 44.3822]).addTo(map)
+                .bindPopup('مطعم حبايبنا العالمي<br>بغداد / طالبية - قرب جسر القناة')
+                .openPopup();
+        }
+
+        // === تهيئة الصفحة ===
+        window.onload = () => {
+            renderMenu('eastern');
+            initMap();
+            
+            // إضافة تأثيرات التمرير
+            const observerOptions = {
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // مراقبة العناصر لإضافة تأثيرات عند التمرير
+            document.querySelectorAll('.dish-card').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // تحديث الروابط النشطة في شريط التنقل
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        };
+
+    </script>
+</body>
+</html>
