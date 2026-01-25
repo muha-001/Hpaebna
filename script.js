@@ -32,10 +32,7 @@ const translations = {
         status_open: "مفتوح الآن",
         status_closed: "مغلق حالياً",
         currency: "د.ع",
-        add_to_cart: "أضف للسلة",
-        recent_orders: "طلباتك الأخيرة",
-        best_seller: "الأكثر طلباً",
-        recommended: "نوصي به"
+        add_to_cart: "أضف للسلة"
     },
     en: {
         nav_home: "Home",
@@ -69,71 +66,53 @@ const translations = {
         status_open: "Open Now",
         status_closed: "Closed Now",
         currency: "IQD",
-        add_to_cart: "Add to Cart",
-        recent_orders: "Recent Orders",
-        best_seller: "Best Seller",
-        recommended: "Recommended"
+        add_to_cart: "Add to Cart"
     }
 };
 
 let currentLang = localStorage.getItem('lang') || 'ar';
-let currentTheme = localStorage.getItem('theme') || 'light';
 
-// === Menu Data with Ratings and Labels ===
+// === Menu Data (All 30 Items Restricted) ===
 const menuItems = [
     // Eastern
-    { id: 1, category: 'eastern', name: 'منسف حبايبنا', name_en: 'Mansaf Habaibna', price: '25,000', img: 'assets/mansaf.png', desc: 'المنسف الأصلي بالجميد واللحم البلدي', desc_en: 'Original Mansaf with Jameed and local lamb.', rating: 4.9, isRecommended: true, ingredients: [{ n: 'لحم خروف', i: '🍖' }, { n: 'جميد', i: '🥛' }, { n: 'أرز', i: '🍚' }, { n: 'لوز', i: '🥜' }] },
-    { id: 2, category: 'eastern', name: 'كباب عراقي', name_en: 'Iraqi Kebab', price: '18,000', img: 'assets/kebab.png', desc: 'كباب مشوي على الفحم مع الطماطم والبصل', desc_en: 'Grilled kebab on charcoal with tomatoes and onions.', rating: 5.0, isBestSeller: true, ingredients: [{ n: 'لحم مفروم', i: '🥩' }, { n: 'بصل', i: '🧅' }, { n: 'سماق', i: '🧂' }, { n: 'خبز', i: '🫓' }] },
-    { id: 3, category: 'eastern', name: 'قوزي على تمن', name_en: 'Quzi on Rice', price: '30,000', img: 'assets/quzi.png', desc: 'قطعة لحم كتف مطهية ببطء مع الرز والمكسرات', desc_en: 'Slow-cooked lamb shoulder with rice and nuts.', rating: 4.8, ingredients: [{ n: 'لحم كتف', i: '🍖' }, { n: 'أرز مبهر', i: '🍚' }, { n: 'زبيب', i: '🍇' }, { n: 'مكسرات', i: '🥜' }] },
-    { id: 4, category: 'eastern', name: 'دولمة عراقية', name_en: 'Iraqi Dolma', price: '15,000', img: 'assets/dolma.png', desc: 'مشكل خضار محشي بالرز واللحم المفروم', desc_en: 'Mixed vegetables stuffed with rice and minced meat.', rating: 4.9, isBestSeller: true, ingredients: [{ n: 'ورق عنب', i: '🍃' }, { n: 'بصل', i: '🧅' }, { n: 'لحم', i: '🥩' }, { n: 'أرز', i: '🍚' }] },
-    { id: 5, category: 'eastern', name: 'سمك مسكوف', name_en: 'Masgouf Fish', price: '35,000', img: 'assets/masgouf.png', desc: 'السمك العراقي الشهير المشوي بالطريقة التقليدية', desc_en: 'Famous Iraqi grilled fish in the traditional way.', rating: 5.0, ingredients: [{ n: 'سمك', i: '🐟' }, { n: 'ليمون', i: '🍋' }, { n: 'ملح خشن', i: '🧂' }, { n: 'نار الحطب', i: '🔥' }] },
-    { id: 6, category: 'eastern', name: 'مرق بامية باللحم', name_en: 'Okra Stew', price: '12,000', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800', desc: 'بامية طازجة مع قطع اللحم والصلصة الحمراء', desc_en: 'Fresh okra with meat pieces and red sauce.', rating: 4.7, ingredients: [{ n: 'بامية', i: '🥗' }, { n: 'لحم', i: '🍖' }, { n: 'طماطم', i: '🍅' }, { n: 'ثوم', i: '🧄' }] },
-    { id: 7, category: 'eastern', name: 'كبة موصلية', name_en: 'Mosul Kubba', price: '10,000', img: 'https://images.unsplash.com/photo-1563379091339-03246963d9d6?auto=format&fit=crop&w=800', desc: 'كبة برغل محشية باللحم والمكسرات', desc_en: 'Bulgur kubba stuffed with meat and nuts.', rating: 4.8, ingredients: [{ n: 'برغل', i: '🌾' }, { n: 'لحم', i: '🥩' }, { n: 'صنوبر', i: '🌲' }, { n: 'بهارات', i: '🧂' }] },
-    { id: 8, category: 'eastern', name: 'شيخ المحشي (كوسا)', name_en: 'Sheikh al-Mahshi', price: '14,000', img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800', desc: 'كوسا محشية باللحم والصنوبر بصوص اللبن', desc_en: 'Zucchini stuffed with meat and pine nuts.', rating: 4.9, ingredients: [{ n: 'كوسا', i: '🥒' }, { n: 'لحم', i: '🥩' }, { n: 'لبن', i: '🥛' }, { n: 'نعناع', i: '🌿' }] },
-    { id: 9, category: 'eastern', name: 'تشريب دجاج', name_en: 'Chicken Tashreeb', price: '15,000', img: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=800', desc: 'تشريب عراقي أصفر بالدجاج والخبز', desc_en: 'Yellow Iraqi tashreeb with chicken and bread.', rating: 4.6, ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'خبز', i: '🍞' }, { n: 'نومي بصرة', i: '🍋' }, { n: 'حمص', i: '🥜' }] },
-    { id: 10, category: 'eastern', name: 'برياني عراقي', name_en: 'Iraqi Biryani', price: '16,000', img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800', desc: 'أرز مبهر مع الدجاج والشعيرية والبطاطا', desc_en: 'Spiced rice with chicken, vermicelli, and potatoes.', rating: 4.8, ingredients: [{ n: 'أرز', i: '🍚' }, { n: 'دجاج', i: '🍗' }, { n: 'بازلاء', i: '🟢' }, { n: 'بهارات', i: '🌶️' }] },
+    { id: 1, category: 'eastern', name: 'منسف حبايبنا', name_en: 'Mansaf Habaibna', price: '25,000', img: 'assets/mansaf.png', desc: 'المنسف الأصلي بالجميد واللحم البلدي', desc_en: 'Original Mansaf with Jameed and local lamb.', ingredients: [{ n: 'لحم خروف', i: '🍖' }, { n: 'جميد', i: '🥛' }, { n: 'أرز', i: '🍚' }, { n: 'لوز', i: '🥜' }] },
+    { id: 2, category: 'eastern', name: 'كباب عراقي', name_en: 'Iraqi Kebab', price: '18,000', img: 'assets/kebab.png', desc: 'كباب مشوي على الفحم مع الطماطم والبصل', desc_en: 'Grilled kebab on charcoal with tomatoes and onions.', ingredients: [{ n: 'لحم مفروم', i: '🥩' }, { n: 'بصل', i: '🧅' }, { n: 'سماق', i: '🧂' }, { n: 'خبز', i: '🫓' }] },
+    { id: 3, category: 'eastern', name: 'قوزي على تمن', name_en: 'Quzi on Rice', price: '30,000', img: 'assets/quzi.png', desc: 'قطعة لحم كتف مطهية ببطء مع الرز والمكسرات', desc_en: 'Slow-cooked lamb shoulder with rice and nuts.', ingredients: [{ n: 'لحم كتف', i: '🍖' }, { n: 'أرز مبهر', i: '🍚' }, { n: 'زبيب', i: '🍇' }, { n: 'مكسرات', i: '🥜' }] },
+    { id: 4, category: 'eastern', name: 'دولمة عراقية', name_en: 'Iraqi Dolma', price: '15,000', img: 'assets/dolma.png', desc: 'مشكل خضار محشي بالرز واللحم المفروم', desc_en: 'Mixed vegetables stuffed with rice and minced meat.', ingredients: [{ n: 'ورق عنب', i: '🍃' }, { n: 'بصل', i: '🧅' }, { n: 'لحم', i: '🥩' }, { n: 'أرز', i: '🍚' }] },
+    { id: 5, category: 'eastern', name: 'سمك مسكوف', name_en: 'Masgouf Fish', price: '35,000', img: 'assets/masgouf.png', desc: 'السمك العراقي الشهير المشوي بالطريقة التقليدية', desc_en: 'Famous Iraqi grilled fish in the traditional way.', ingredients: [{ n: 'سمك', i: '🐟' }, { n: 'ليمون', i: '🍋' }, { n: 'ملح خشن', i: '🧂' }, { n: 'نار الحطب', i: '🔥' }] },
+    { id: 6, category: 'eastern', name: 'مرق بامية باللحم', name_en: 'Okra Stew with Meat', price: '12,000', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800', desc: 'بامية طازجة مع قطع اللحم والصلصة الحمراء', desc_en: 'Fresh okra with meat pieces and red sauce.', ingredients: [{ n: 'بامية', i: '🥗' }, { n: 'لحم', i: '🍖' }, { n: 'طماطم', i: '🍅' }, { n: 'ثوم', i: '🧄' }] },
+    { id: 7, category: 'eastern', name: 'كبة موصلية', name_en: 'Mosul Kubba', price: '10,000', img: 'https://images.unsplash.com/photo-1563379091339-03246963d9d6?auto=format&fit=crop&w=800', desc: 'كبة برغل محشية باللحم والمكسرات', desc_en: 'Bulgur kubba stuffed with meat and nuts.', ingredients: [{ n: 'برغل', i: '🌾' }, { n: 'لحم', i: '🥩' }, { n: 'صنوبر', i: '🌲' }, { n: 'بهارات', i: '🧂' }] },
+    { id: 8, category: 'eastern', name: 'شيخ المحشي (كوسا)', name_en: 'Sheikh al-Mahshi', price: '14,000', img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800', desc: 'كوسا محشية باللحم والصنوبر بصوص اللبن', desc_en: 'Zucchini stuffed with meat and pine nuts in yogurt sauce.', ingredients: [{ n: 'كوسا', i: '🥒' }, { n: 'لحم', i: '🥩' }, { n: 'لبن', i: '🥛' }, { n: 'نعناع', i: '🌿' }] },
+    { id: 9, category: 'eastern', name: 'تشريب دجاج', name_en: 'Chicken Tashreeb', price: '15,000', img: 'https://images.unsplash.com/photo-1563379091339-03246963d9d6?auto=format&fit=crop&w=800', desc: 'تشريب عراقي أصفر بالدجاج والخبز', desc_en: 'Yellow Iraqi tashreeb with chicken and bread.', ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'خبز', i: '🍞' }, { n: 'نومي بصرة', i: '🍋' }, { n: 'حمص', i: '🥜' }] },
+    { id: 10, category: 'eastern', name: 'برياني عراقي', name_en: 'Iraqi Biryani', price: '16,000', img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800', desc: 'أرز مبهر مع الدجاج والشعيرية والبطاطا', desc_en: 'Spiced rice with chicken, vermicelli, and potatoes.', ingredients: [{ n: 'أرز', i: '🍚' }, { n: 'دجاج', i: '🍗' }, { n: 'بازلاء', i: '🟢' }, { n: 'بهارات', i: '🌶️' }] },
 
     // Fast Food
-    { id: 11, category: 'fastfood', name: 'كلاسيك بيف برجر', name_en: 'Classic Beef Burger', price: '12,000', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800', desc: 'شريحة لحم بقري صافي مع الجبن الذائب', desc_en: 'Pure beef patty with melted cheese.', rating: 5.0, isBestSeller: true, ingredients: [{ n: 'لحم بقري', i: '🥩' }, { n: 'جبن', i: '🧀' }, { n: 'خس', i: '🥬' }, { n: 'طماطم', i: '🍅' }] },
-    { id: 12, category: 'fastfood', name: 'شاورما دجاج', name_en: 'Chicken Shawarma', price: '8,000', img: 'https://images.unsplash.com/photo-1616683693504-3ea7d5d5f5c5?auto=format&fit=crop&w=800', desc: 'شاورما دجاج بالتتبيلة الخاصة والثومية', desc_en: 'Chicken shawarma with special seasoning.', rating: 4.9, isBestSeller: true, ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'ثومية', i: '🧄' }, { n: 'مخلل', i: '🥒' }, { n: 'خبز صاج', i: '🫓' }] },
-    { id: 13, category: 'fastfood', name: 'بيتزا سوبريم', name_en: 'Supreme Pizza', price: '15,000', img: 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?auto=format&fit=crop&w=800', desc: 'بيتزا غنية باللحم والخضروات والجبن', desc_en: 'Pizza rich in meat, vegetables, and cheese.', rating: 4.8, ingredients: [{ n: 'عجين', i: '🍕' }, { n: 'ببروني', i: '🥓' }, { n: 'فلفل', i: '🫑' }, { n: 'موزاريلا', i: '🧀' }] },
-    { id: 14, category: 'fastfood', name: 'ساندويتش كباب', name_en: 'Kebab Sandwich', price: '7,000', img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800', desc: 'ساندويتش كباب عراقي بالصمون الحجري', desc_en: 'Iraqi kebab sandwich in stone oven bread.', rating: 4.7, ingredients: [{ n: 'كباب', i: '🍢' }, { n: 'صمون', i: '🥖' }, { n: 'بصل', i: '🧅' }, { n: 'طحينة', i: '🥣' }] },
-    { id: 15, category: 'fastfood', name: 'بطاطا بالجبن', name_en: 'Cheesy Fries', price: '6,000', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800', desc: 'بطاطا مقلية مغطاة بصوص الشيدر', desc_en: 'French fries covered with cheddar sauce.', rating: 4.9, ingredients: [{ n: 'بطاطا', i: '🍟' }, { n: 'جبن', i: '🧀' }, { n: 'هالابينو', i: '🌶️' }] },
-    { id: 16, category: 'fastfood', name: 'دجاج مقلي (بروستد)', name_en: 'Broasted Chicken', price: '18,000', img: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=800', desc: 'نصف دجاجة مقرمشة مع البطاطا والثومية', desc_en: 'Crispy chicken with fries.', rating: 4.8, ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'تتبيلة', i: '🤫' }, { n: 'بطاطا', i: '🍟' }, { n: 'ثوم', i: '🧄' }] },
-    { id: 17, category: 'fastfood', name: 'هوت دوج سبيشال', name_en: 'Special Hot Dog', price: '8,000', img: 'https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=800', desc: 'نقانق مشوية مع الماسترد والكاتشب', desc_en: 'Grilled hot dog with mustard.', rating: 4.5, ingredients: [{ n: 'نقانق', i: '🌭' }, { n: 'خردل', i: '🟡' }, { n: 'كاتشب', i: '🔴' }, { n: 'خبز', i: '🥖' }] },
-    { id: 18, category: 'fastfood', name: 'ساندويتش فلافل', name_en: 'Falafel Sandwich', price: '3,000', img: 'https://images.unsplash.com/photo-1596560548464-f010549b84d7?auto=format&fit=crop&w=800', desc: 'فلافل عراقية مقرمشة بالعمبة', desc_en: 'Crispy Iraqi falafel with amba.', rating: 4.9, ingredients: [{ n: 'فلافل', i: '🧆' }, { n: 'عمبة', i: '🥭' }, { n: 'سلطة', i: '🥗' }, { n: 'صمون', i: '🥖' }] },
-    { id: 19, category: 'fastfood', name: 'كرسبي تشيكن برجر', name_en: 'Crispy Chicken Burger', price: '10,000', img: 'https://images.unsplash.com/photo-1607013251379-e6eecfffe234?auto=format&fit=crop&w=800', desc: 'صدر دجاج مقرمش مع الخس والمايونيز', desc_en: 'Crispy chicken breast with lettuce.', rating: 4.8, ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'مايونيز', i: '⚪' }, { n: 'خس', i: '🥬' }, { n: 'خبز', i: '🍔' }] },
-    { id: 20, category: 'fastfood', name: 'ناجتس للأطفال', name_en: 'Kids Nuggets', price: '8,000', img: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=800', desc: 'قطع دجاج ذهبية مع البطاطا والعصير', desc_en: 'Golden chicken pieces for kids.', rating: 4.7, ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'بقسماط', i: '🍞' }, { n: 'بطاطا', i: '🍟' }, { n: 'كاتشب', i: '🍅' }] },
+    { id: 11, category: 'fastfood', name: 'كلاسيك بيف برجر', name_en: 'Classic Beef Burger', price: '12,000', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800', desc: 'شريحة لحم بقري صافي مع الجبن الذائب', desc_en: 'Pure beef patty with melted cheese.', ingredients: [{ n: 'لحم بقري', i: '🥩' }, { n: 'جبن', i: '🧀' }, { n: 'خس', i: '🥬' }, { n: 'طماطم', i: '🍅' }] },
+    { id: 12, category: 'fastfood', name: 'شاورما دجاج', name_en: 'Chicken Shawarma', price: '8,000', img: 'https://images.unsplash.com/photo-1616683693504-3ea7d5d5f5c5?auto=format&fit=crop&w=800', desc: 'شاورما دجاج بالتتبيلة الخاصة والثومية', desc_en: 'Chicken shawarma with special seasoning and garlic sauce.', ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'ثومية', i: '🧄' }, { n: 'مخلل', i: '🥒' }, { n: 'خبز صاج', i: '🫓' }] },
+    { id: 13, category: 'fastfood', name: 'بيتزا سوبريم', name_en: 'Supreme Pizza', price: '15,000', img: 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?auto=format&fit=crop&w=800', desc: 'بيتزا غنية باللحم والخضروات والجبن', desc_en: 'Pizza rich in meat, vegetables, and cheese.', ingredients: [{ n: 'عجين', i: '🍕' }, { n: 'ببروني', i: '🥓' }, { n: 'فلفل', i: '🫑' }, { n: 'موزاريلا', i: '🧀' }] },
+    { id: 14, category: 'fastfood', name: 'ساندويتش كباب', name_en: 'Kebab Sandwich', price: '7,000', img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800', desc: 'ساندويتش كباب عراقي بالصمون الحجري', desc_en: 'Iraqi kebab sandwich in stone oven bread.', ingredients: [{ n: 'كباب', i: '🍢' }, { n: 'صمون', i: '🥖' }, { n: 'بصل', i: '🧅' }, { n: 'طحينة', i: '🥣' }] },
+    { id: 15, category: 'fastfood', name: 'بطاطا بالجبن', name_en: 'Cheesy Fries', price: '6,000', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800', desc: 'بطاطا مقلية مغطاة بصوص الشيدر', desc_en: 'French fries covered with cheddar sauce.', ingredients: [{ n: 'بطاطا', i: '🍟' }, { n: 'جبن', i: '🧀' }, { n: 'هالابينو', i: '🌶️' }] },
+    { id: 16, category: 'fastfood', name: 'دجاج مقلي (بروستد)', name_en: 'Broasted Chicken', price: '18,000', img: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=800', desc: 'نصف دجاجة مقرمشة مع البطاطا والثومية', desc_en: 'Crispy chicken with fries and garlic sauce.', ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'تتبيلة', i: '🤫' }, { n: 'بطاطا', i: '🍟' }, { n: 'ثوم', i: '🧄' }] },
+    { id: 17, category: 'fastfood', name: 'هوت دوج سبيشال', name_en: 'Special Hot Dog', price: '8,000', img: 'https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=800', desc: 'نقانق مشوية مع الماسترد والكاتشب', desc_en: 'Grilled hot dog with mustard and ketchup.', ingredients: [{ n: 'نقانق', i: '🌭' }, { n: 'خردل', i: '🟡' }, { n: 'كاتشب', i: '🔴' }, { n: 'خبز', i: '🥖' }] },
+    { id: 18, category: 'fastfood', name: 'ساندويتش فلافل', name_en: 'Falafel Sandwich', price: '3,000', img: 'https://images.unsplash.com/photo-1596560548464-f010549b84d7?auto=format&fit=crop&w=800', desc: 'فلافل عراقية مقرمشة بالعمبة', desc_en: 'Crispy Iraqi falafel with amba.', ingredients: [{ n: 'فلافل', i: '🧆' }, { n: 'عمبة', i: '🥭' }, { n: 'سلطة', i: '🥗' }, { n: 'صمون', i: '🥖' }] },
+    { id: 19, category: 'fastfood', name: 'كرسبي تشيكن برجر', name_en: 'Crispy Chicken Burger', price: '10,000', img: 'https://images.unsplash.com/photo-1607013251379-e6eecfffe234?auto=format&fit=crop&w=800', desc: 'صدر دجاج مقرمش مع الخس والمايونيز', desc_en: 'Crispy chicken breast with lettuce and mayo.', ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'مايونيز', i: '⚪' }, { n: 'خس', i: '🥬' }, { n: 'خبز', i: '🍔' }] },
+    { id: 20, category: 'fastfood', name: 'ناجتس للأطفال', name_en: 'Kids Nuggets', price: '8,000', img: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=800', desc: 'قطع دجاج ذهبية مع البطاطا والعصير', desc_en: 'Golden chicken pieces with fries.', ingredients: [{ n: 'دجاج', i: '🍗' }, { n: 'بقسماط', i: '🍞' }, { n: 'بطاطا', i: '🍟' }, { n: 'كاتشب', i: '🍅' }] },
 
     // Desserts
-    { id: 21, category: 'desserts', name: 'كنافة بالجبن', name_en: 'Cheese Kunafa', price: '8,000', img: 'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=800', desc: 'كنافة نابلسية ساخنة بالقطر والفستق', desc_en: 'Hot Nabulsi kunafa with syrup.', rating: 5.0, isBestSeller: true, ingredients: [{ n: 'عجينة', i: '🥨' }, { n: 'جبن', i: '🧀' }, { n: 'فستق', i: '🥜' }, { n: 'شيرة', i: '🍯' }] },
-    { id: 22, category: 'desserts', name: 'بسبوسة', name_en: 'Basbousa', price: '5,000', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800', desc: 'بسبوسة هشة باللوز وجوز الهند', desc_en: 'Soft basbousa with almonds.', rating: 4.8, ingredients: [{ n: 'سميد', i: '🌾' }, { n: 'جوز هند', i: '🥥' }, { n: 'لوز', i: '🥜' }, { n: 'قطر', i: '🍯' }] },
-    { id: 23, category: 'desserts', name: 'أم علي', name_en: 'Om Ali', price: '7,000', img: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=800', desc: 'حلوى الحليب والرقائق والمكسرات الساخنة', desc_en: 'Hot milk dessert with flakes.', rating: 4.9, ingredients: [{ n: 'حليب', i: '🥛' }, { n: 'رقائق', i: '🥐' }, { n: 'قشطة', i: '☁️' }, { n: 'زبيب', i: '🍇' }] },
-    { id: 24, category: 'desserts', name: 'زلابية (Churros)', name_en: 'Zalabia', price: '4,000', img: 'https://images.unsplash.com/photo-1543943482-6c9f19c1508b?auto=format&fit=crop&w=800', desc: 'عجين مقلي ومغطى بالشيرة (العسل)', desc_en: 'Fried dough with syrup.', rating: 4.7, ingredients: [{ n: 'عجين', i: '🥨' }, { n: 'زيت', i: '🌻' }, { n: 'شيرة', i: '🍯' }] },
-    { id: 25, category: 'desserts', name: 'بقلاوة مشكلة', name_en: 'Mixed Baklava', price: '10,000', img: 'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=800', desc: 'تشكيلة من البقلاوة الفاخرة بالفستق', desc_en: 'Variety of luxury pistachio baklava.', rating: 4.9, ingredients: [{ n: 'رقائق', i: '📄' }, { n: 'فستق', i: '🥜' }, { n: 'سمن', i: '🧈' }, { n: 'عسل', i: '🍯' }] },
-    { id: 26, category: 'desserts', name: 'تشيز كيك', name_en: 'Cheesecake', price: '9,000', img: 'https://images.unsplash.com/photo-1578775887804-699de7086ff9?auto=format&fit=crop&w=800', desc: 'تشيز كيك نيويورك مع صوص الفراولة', desc_en: 'New York cheesecake with strawberry.', rating: 4.8, ingredients: [{ n: 'جبن كريمي', i: '🧀' }, { n: 'بسكويت', i: '🍪' }, { n: 'فراولة', i: '🍓' }] },
-    { id: 27, category: 'desserts', name: 'قطايف بالجوز', name_en: 'Qatayef with Walnut', price: '5,000', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800', desc: 'قطايف مقلية محشوة بالجوز والقرفة', desc_en: 'Fried qatayef stuffed with walnuts.', rating: 5.0, ingredients: [{ n: 'قطايف', i: '🥞' }, { n: 'جوز', i: '🥜' }, { n: 'قرفة', i: '🤎' }, { n: 'قطر', i: '🍯' }] },
-    { id: 28, category: 'desserts', name: 'ميلك شيك أوريو', name_en: 'Oreo Milkshake', price: '6,000', img: 'https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=800', desc: 'مخفوق الحليب مع بسكويت الأوريو والكريمة', desc_en: 'Milkshake with Oreo cookies.', rating: 4.8, ingredients: [{ n: 'حليب', i: '🥛' }, { n: 'أوريو', i: '🍪' }, { n: 'آيس كريم', i: '🍦' }] },
-    { id: 29, category: 'desserts', name: 'آيس كريم زعفران', name_en: 'Saffron Ice Cream', price: '7,000', img: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800', desc: 'آيس كريم عربي بنكهة الزعفران والفستق', desc_en: 'Arabic ice cream with saffron.', rating: 4.9, ingredients: [{ n: 'حليب', i: '🥛' }, { n: 'زعفران', i: '🌺' }, { n: 'فستق', i: '🥜' }, { n: 'ورد', i: '🌹' }] },
-    { id: 30, category: 'desserts', name: 'عصير برتقال طازج', name_en: 'Fresh Orange Juice', price: '4,000', img: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=800', desc: 'عصير برتقال طبيعي 100% بدون إضافات', desc_en: '100% natural orange juice.', rating: 4.7, ingredients: [{ n: 'برتقال', i: '🍊' }, { n: 'ثلج', i: '🧊' }] }
+    { id: 21, category: 'desserts', name: 'كنافة بالجبن', name_en: 'Cheese Kunafa', price: '8,000', img: 'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=800', desc: 'كنافة نابلسية ساخنة بالقطر والفستق', desc_en: 'Hot Nabulsi kunafa with syrup and pistachios.', ingredients: [{ n: 'عجينة', i: '🥨' }, { n: 'جبن', i: '🧀' }, { n: 'فستق', i: '🥜' }, { n: 'شيرة', i: '🍯' }] },
+    { id: 22, category: 'desserts', name: 'بسبوسة', name_en: 'Basbousa', price: '5,000', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800', desc: 'بسبوسة هشة باللوز وجوز الهند', desc_en: 'Soft basbousa with almonds and coconut.', ingredients: [{ n: 'سميد', i: '🌾' }, { n: 'جوز هند', i: '🥥' }, { n: 'لوز', i: '🥜' }, { n: 'قطر', i: '🍯' }] },
+    { id: 23, category: 'desserts', name: 'أم علي', name_en: 'Om Ali', price: '7,000', img: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=800', desc: 'حلوى الحليب والرقائق والمكسرات الساخنة', desc_en: 'Hot milk dessert with flakes and nuts.', ingredients: [{ n: 'حليب', i: '🥛' }, { n: 'رقائق', i: '🥐' }, { n: 'قشطة', i: '☁️' }, { n: 'زبيب', i: '🍇' }] },
+    { id: 24, category: 'desserts', name: 'زلابية (Churros)', name_en: 'Zalabia', price: '4,000', img: 'https://images.unsplash.com/photo-1543943482-6c9f19c1508b?auto=format&fit=crop&w=800', desc: 'عجين مقلي ومغطى بالشيرة (العسل)', desc_en: 'Fried dough with syrup.', ingredients: [{ n: 'عجين', i: '🥨' }, { n: 'زيت', i: '🌻' }, { n: 'شيرة', i: '🍯' }] },
+    { id: 25, category: 'desserts', name: 'بقلاوة مشكلة', name_en: 'Mixed Baklava', price: '10,000', img: 'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=800', desc: 'تشكيلة من البقلاوة الفاخرة بالفستق', desc_en: 'Variety of luxury pistachio baklava.', ingredients: [{ n: 'رقائق', i: '📄' }, { n: 'فستق', i: '🥜' }, { n: 'سمن', i: '🧈' }, { n: 'عسل', i: '🍯' }] },
+    { id: 26, category: 'desserts', name: 'تشيز كيك', name_en: 'Cheesecake', price: '9,000', img: 'https://images.unsplash.com/photo-1578775887804-699de7086ff9?auto=format&fit=crop&w=800', desc: 'تشيز كيك نيويورك مع صوص الفراولة', desc_en: 'New York cheesecake with strawberry sauce.', ingredients: [{ n: 'جبن كريمي', i: '🧀' }, { n: 'بسكويت', i: '🍪' }, { n: 'فراولة', i: '🍓' }] },
+    { id: 27, category: 'desserts', name: 'قطايف بالجوز', name_en: 'Qatayef with Walnut', price: '5,000', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800', desc: 'قطايف مقلية محشوة بالجوز والقرفة', desc_en: 'Fried qatayef stuffed with walnuts.', ingredients: [{ n: 'قطايف', i: '🥞' }, { n: 'جوز', i: '🥜' }, { n: 'قرفة', i: '🤎' }, { n: 'قطر', i: '🍯' }] },
+    { id: 28, category: 'desserts', name: 'ميلك شيك أوريو', name_en: 'Oreo Milkshake', price: '6,000', img: 'https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=800', desc: 'مخفوق الحليب مع بسكويت الأوريو والكريمة', desc_en: 'Milkshake with Oreo cookies and cream.', ingredients: [{ n: 'حليب', i: '🥛' }, { n: 'أوريو', i: '🍪' }, { n: 'آيس كريم', i: '🍦' }] },
+    { id: 29, category: 'desserts', name: 'آيس كريم زعفران', name_en: 'Saffron Ice Cream', price: '7,000', img: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800', desc: 'آيس كريم عربي بنكهة الزعفران والفستق', desc_en: 'Arabic ice cream with saffron and pistachio.', ingredients: [{ n: 'حليب', i: '🥛' }, { n: 'زعفران', i: '🌺' }, { n: 'فستق', i: '🥜' }, { n: 'ورد', i: '🌹' }] },
+    { id: 30, category: 'desserts', name: 'عصير برتقال طازج', name_en: 'Fresh Orange Juice', price: '4,000', img: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=800', desc: 'عصير برتقال طبيعي 100% بدون إضافات', desc_en: '100% natural orange juice.', ingredients: [{ n: 'برتقال', i: '🍊' }, { n: 'ثلج', i: '🧊' }] }
 ];
 
 let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-let recentOrders = JSON.parse(localStorage.getItem('recent_orders')) || [];
 const DELIVERY_FEE = 2000;
-
-// === Theme Logic ===
-function initTheme() {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    const toggleBtn = document.getElementById('themeToggle');
-    if (toggleBtn) toggleBtn.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-}
-
-function toggleTheme() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    localStorage.setItem('theme', currentTheme);
-    initTheme();
-}
 
 // === Language Logic ===
 function updateLanguage() {
@@ -216,26 +195,6 @@ function renderMenu(filter = 'eastern') {
     const grid = document.getElementById('menuGrid');
     grid.innerHTML = '';
 
-    // Add Recent Orders Section if history exists
-    if (recentOrders.length > 0) {
-        const recentSection = document.createElement('div');
-        recentSection.className = 'recent-orders-header';
-        recentSection.style.gridColumn = '1 / -1';
-        recentSection.innerHTML = `<h3 data-i18n="recent_orders" style="margin-bottom: 20px;">${translations[currentLang].recent_orders}</h3>`;
-        grid.appendChild(recentSection);
-
-        recentOrders.slice(0, 3).forEach(itemId => {
-            const item = menuItems.find(i => i.id === itemId);
-            if (item) renderItemCard(item, grid);
-        });
-
-        const separator = document.createElement('hr');
-        separator.style.gridColumn = '1 / -1';
-        separator.style.margin = '40px 0';
-        separator.style.opacity = '0.1';
-        grid.appendChild(separator);
-    }
-
     const filteredItems = menuItems.filter(item => {
         const matchesCategory = item.category === filter;
         const name = currentLang === 'ar' ? item.name : item.name_en;
@@ -243,56 +202,32 @@ function renderMenu(filter = 'eastern') {
         return matchesCategory && matchesSearch;
     });
 
-    filteredItems.forEach((item) => renderItemCard(item, grid));
+    filteredItems.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'dish-card';
+        card.style.animationDelay = `${index * 0.05}s`;
+        card.onclick = (e) => {
+            if (!e.target.closest('.add-btn')) openExplosionModal(item);
+        };
 
-    // Add Scroll Watcher for Animations
-    observeCards();
-}
+        const name = currentLang === 'ar' ? item.name : item.name_en;
+        const desc = currentLang === 'ar' ? item.desc : item.desc_en;
 
-function renderItemCard(item, container) {
-    const card = document.createElement('div');
-    card.className = 'dish-card scroll-reveal';
-    card.onclick = (e) => {
-        if (!e.target.closest('.add-btn')) openExplosionModal(item);
-    };
-
-    const name = currentLang === 'ar' ? item.name : item.name_en;
-    const desc = currentLang === 'ar' ? item.desc : item.desc_en;
-
-    let label = '';
-    if (item.isBestSeller) label = `<span class="badge best-seller" data-i18n="best_seller">${translations[currentLang].best_seller}</span>`;
-    else if (item.isRecommended) label = `<span class="badge recommended" data-i18n="recommended">${translations[currentLang].recommended}</span>`;
-
-    const stars = '⭐'.repeat(Math.round(item.rating || 4.5));
-
-    card.innerHTML = `
-        ${label}
-        <div class="dish-img-container">
-            <img src="${item.img}" alt="${name}" class="dish-img" loading="lazy">
-        </div>
-        <div class="dish-info">
-            <div class="rating-stars">${stars} <small>(${item.rating})</small></div>
-            <h3 class="dish-title">${name}</h3>
-            <p class="dish-desc">${desc}</p>
-            <div class="dish-footer">
-                <span class="price">${item.price} <small>${translations[currentLang].currency}</small></span>
-                <button class="add-btn" onclick="addToCart(${item.id})"><i class="fas fa-plus"></i></button>
+        card.innerHTML = `
+            <div class="dish-img-container">
+                <img src="${item.img}" alt="${name}" class="dish-img" loading="lazy">
             </div>
-        </div>
-    `;
-    container.appendChild(card);
-}
-
-function observeCards() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.scroll-reveal').forEach(card => observer.observe(card));
+            <div class="dish-info">
+                <h3 class="dish-title">${name}</h3>
+                <p class="dish-desc">${desc}</p>
+                <div class="dish-footer">
+                    <span class="price">${item.price} <small>${translations[currentLang].currency}</small></span>
+                    <button class="add-btn" onclick="addToCart(${item.id})"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
 }
 
 // === Tabs Logic ===
@@ -354,7 +289,7 @@ function renderCartItems() {
                     <button onclick="changeQty(${item.id}, -1)" class="qty-btn" style="width:25px; height:25px; border-radius:50%; border:1px solid #ddd; background:#fff;">-</button>
                     <span>${item.quantity}</span>
                     <button onclick="changeQty(${item.id}, 1)" class="qty-btn" style="width:25px; height:25px; border-radius:50%; border:1px solid #ddd; background:#fff;">+</button>
-                    <i class="fas fa-trash-alt" onclick="removeItem(${item.id})" style="color:#d9534f; cursor:pointer; margin-right: 5px;"></i>
+                    <i class="fas fa-trash-alt" onclick="removeItem(${item.id})" style="color:#d9534f; cursor:pointer;"></i>
                 </div>
             </div>
         `;
@@ -381,19 +316,14 @@ function removeItem(id) {
 
 function toggleCart() {
     const sidebar = document.getElementById('cartSidebar');
-    const content = document.getElementById('cartContent');
     const isOpen = sidebar.style.display === 'flex';
 
     if (isOpen) {
+        sidebar.style.display = 'none';
         sidebar.classList.remove('active');
-        content.style.transform = 'translateX(-100%)';
-        setTimeout(() => { sidebar.style.display = 'none'; }, 300);
     } else {
         sidebar.style.display = 'flex';
-        setTimeout(() => {
-            sidebar.classList.add('active');
-            content.style.transform = 'translateX(0)';
-        }, 10);
+        setTimeout(() => sidebar.classList.add('active'), 10);
     }
 }
 
@@ -427,22 +357,9 @@ function openExplosionModal(item) {
             particle.className = 'ingredient-particle';
             particle.innerText = ing.i;
             particle.style.position = 'absolute';
-            particle.style.width = '50px';
-            particle.style.height = '50px';
-            particle.style.background = '#fff';
-            particle.style.borderRadius = '50%';
-            particle.style.display = 'flex';
-            particle.style.justifyContent = 'center';
-            particle.style.alignItems = 'center';
-            particle.style.fontSize = '1.5rem';
             particle.style.opacity = '0';
-            particle.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            particle.style.zIndex = '5';
 
             container.appendChild(particle);
-
-            particle.style.left = `calc(50% - 25px)`;
-            particle.style.top = `calc(50% - 25px)`;
 
             const angle = (i * (360 / item.ingredients.length)) * (Math.PI / 180);
             const destX = Math.cos(angle) * radius;
@@ -453,14 +370,6 @@ function openExplosionModal(item) {
                 particle.style.transform = `translate(${destX}px, ${destY}px)`;
             }, 50);
 
-            setTimeout(() => {
-                particle.style.transition = 'all 0.6s ease-in';
-                particle.style.top = '85%';
-                particle.style.left = `${(i + 1) * (100 / (item.ingredients.length + 1))}%`;
-                particle.style.transform = 'translate(-50%, 0)';
-                particle.style.opacity = '0';
-            }, 1000);
-
             panel.innerHTML += `
                 <div class="ingredient-item">
                     <div style="font-size: 2rem;">${ing.i}</div>
@@ -469,7 +378,7 @@ function openExplosionModal(item) {
             `;
         });
 
-        setTimeout(() => panel.classList.add('show'), 1200);
+        setTimeout(() => panel.classList.add('show'), 800);
     }, 600);
 }
 
@@ -534,14 +443,7 @@ function finalizeOrder() {
     cartItems.forEach(item => {
         const itemTotal = parseInt(item.price.replace(/,/g, '')) * item.quantity;
         message += `- ${item.name} (x${item.quantity}): ${itemTotal.toLocaleString()} د.ع%0a`;
-
-        // Save to Recent Orders
-        if (!recentOrders.includes(item.id)) recentOrders.unshift(item.id);
     });
-
-    // Keep history limit to 10
-    recentOrders = recentOrders.slice(0, 10);
-    localStorage.setItem('recent_orders', JSON.stringify(recentOrders));
 
     message += `-----------------------------%0a`;
     message += `المجموع: ${subTotalVal.toLocaleString()} د.ع%0a`;
@@ -556,27 +458,26 @@ function finalizeOrder() {
     closeCheckoutModal();
 }
 
+function toggleMenu() {
+    const links = document.querySelector('.nav-links');
+    links.classList.toggle('active');
+}
+
 function scrollToMenu(cat) {
     document.getElementById('menu').scrollIntoView();
-    if (document.querySelector(`.tab-btn[data-category="${cat}"]`)) {
-        document.querySelector(`.tab-btn[data-category="${cat}"]`).click();
-    }
+    const btn = document.querySelector(`.tab-btn[data-category="${cat}"]`);
+    if (btn) btn.click();
 }
 
 // === Map & Init ===
 window.onload = () => {
-    initTheme();
     updateLanguage();
-
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('SW Registered', reg))
-            .catch(err => console.log('SW Failed', err));
-    }
 
     if (typeof L !== 'undefined') {
         const map = L.map('map').setView([33.3152, 44.3661], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'OpenStreetMap'
+        }).addTo(map);
         L.marker([33.3152, 44.3661]).addTo(map).bindPopup('مطعم حبايبنا').openPopup();
     }
 
@@ -593,5 +494,10 @@ window.onload = () => {
         { name: "Ahmed", text: "أفضل كباب في بغداد!", text_en: "Best kebab in Baghdad!" },
         { name: "Sarah", text: "الخدمة سريعة والأكل يجنن", text_en: "Fast service and amazing food!" }
     ];
-    reviewsCon.innerHTML = reviews.map(r => `<div class="review-card"><p class="review-text">"${currentLang === 'ar' ? r.text : r.text_en}"</p><p class="review-author">- ${r.name}</p></div>`).join('');
+    reviewsCon.innerHTML = reviews.map(r => `
+        <div class="review-card">
+            <p class="review-text">"${currentLang === 'ar' ? r.text : r.text_en}"</p>
+            <p class="review-author">- ${r.name}</p>
+        </div>
+    `).join('');
 };
