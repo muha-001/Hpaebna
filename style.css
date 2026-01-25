@@ -462,11 +462,19 @@ header {
 
 .close-modal {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 30px;
+    right: 30px;
     color: #fff;
-    font-size: 2rem;
+    font-size: 3rem;
     cursor: pointer;
+    z-index: 2500;
+    transition: transform 0.3s;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    transform: scale(1.2);
+    color: var(--primary-gold);
 }
 
 /* === سلة التسوق === */

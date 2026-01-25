@@ -392,8 +392,22 @@ function addToCartFromModal() {
 }
 
 function closeModal() {
-    document.getElementById('explosionModal').classList.remove('active');
+    const modal = document.getElementById('explosionModal');
+    modal.classList.remove('active');
+    // Stop all ongoing animations
+    const mainDish = document.getElementById('mainDishView');
+    if (mainDish) mainDish.style.animation = 'none';
+    const panel = document.getElementById('ingredientsPanel');
+    if (panel) panel.classList.remove('show');
 }
+
+// Close modal on background click
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('explosionModal');
+    if (e.target === modal || e.target.id === 'explosionContainer') {
+        closeModal();
+    }
+});
 
 // === Checkout Logic ===
 function openCheckoutModal() {
