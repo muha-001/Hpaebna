@@ -23,6 +23,7 @@
 
     <!-- Custom Style -->
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
@@ -44,6 +45,9 @@
         </ul>
 
         <div class="nav-icons">
+            <div id="themeToggle" class="theme-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+            </div>
             <div class="lang-switcher" onclick="toggleLanguage()">
                 <i class="fas fa-globe"></i>
                 <span id="langText">EN</span>
@@ -56,12 +60,22 @@
     </nav>
 
     <header id="home">
+        <div class="video-container">
+            <video autoplay muted loop playsinline class="hero-video" id="heroVideo">
+                <source
+                    src="https://assets.mixkit.co/videos/preview/mixkit-chef-preparing-a-dish-in-a-professional-kitchen-40781-large.mp4"
+                    type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+        </div>
         <div class="hero-content">
-            <h1 class="hero-title">مطعم حبايبنا العالمي</h1>
-            <p class="hero-subtitle">طعم بغداد الأصيل في كل لقمة<br>نجمع بين عراقة الماضي ولذة الحاضر</p>
+            <h1 class="hero-title" data-i18n="hero_title">مطعم حبايبنا العالمي</h1>
+            <p class="hero-subtitle" data-i18n="hero_subtitle">طعم بغداد الأصيل في كل لقمة<br>نجمع بين عراقة الماضي ولذة
+                الحاضر</p>
             <div style="margin-top: 30px;">
-                <button class="btn primary" onclick="scrollToMenu('eastern')">الأطباق الشرقية</button>
-                <button class="btn" onclick="scrollToMenu('fastfood')">وجبات سريعة</button>
+                <button class="btn primary" onclick="scrollToMenu('eastern')" data-i18n="btn_eastern">الأطباق
+                    الشرقية</button>
+                <button class="btn" onclick="scrollToMenu('fastfood')" data-i18n="btn_fastfood">وجبات سريعة</button>
             </div>
         </div>
     </header>
