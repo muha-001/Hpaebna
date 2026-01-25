@@ -166,7 +166,7 @@
             </div>
             <div class="ingredients-list-panel" id="ingredientsPanel"></div>
             <button class="btn primary" style="position: absolute; bottom: 120px; z-index: 20;"
-                onclick="addToCartFromModal()">أضف للسلة</button>
+                onclick="addToCartFromModal()" data-i18n="add_to_cart">أضف للسلة</button>
         </div>
     </div>
 
@@ -174,7 +174,7 @@
         <div class="cart-content" id="cartContent">
             <div
                 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                <h3 style="color: var(--dark-brown);">سلة الطلبات</h3>
+                <h3 style="color: var(--dark-brown);" data-i18n="cart_title">سلة الطلبات</h3>
                 <div onclick="toggleCart()" style="cursor: pointer; font-size: 1.5rem;">&times;</div>
             </div>
             <div id="cartItems" style="flex: 1; overflow-y: auto;"></div>
@@ -191,7 +191,8 @@
                     <span>الإجمالي النهائي:</span>
                     <span id="cartFinalTotal">2,000 د.ع</span>
                 </div>
-                <button class="btn primary" style="width: 100%; margin-top: 15px;" onclick="openCheckoutModal()">
+                <button class="btn primary" style="width: 100%; margin-top: 15px;" onclick="openCheckoutModal()"
+                    data-i18n="btn_checkout">
                     <i class="fas fa-check-circle" style="margin-left: 8px;"></i> إتمام الطلب
                 </button>
             </div>
@@ -203,7 +204,7 @@
             <div onclick="closeCheckoutModal()"
                 style="position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 1.5rem; color: #999;">
                 &times;</div>
-            <h3 class="checkout-title">معلومات التوصيل</h3>
+            <h3 class="checkout-title" data-i18n="checkout_title">معلومات التوصيل</h3>
             <div class="checkout-input-group">
                 <label>الاسم الثلاثي:</label>
                 <input type="text" id="custName" class="checkout-input" placeholder="اكتب اسمك الثلاثي">
