@@ -23,9 +23,16 @@
 
     <!-- Custom Style -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Advanced Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
 </head>
 
 <body>
+
+    <div id="webgl-bg"></div>
 
     <nav>
         <div class="menu-toggle" onclick="toggleMenu()">
@@ -33,7 +40,11 @@
         </div>
 
         <a href="#" class="logo">
-            <i class="fas fa-utensils"></i> حبايبنا
+            <svg id="morph-logo" viewBox="0 0 100 100" width="40" height="40" style="margin-left: 10px;">
+                <path id="logo-path" d="M30,20 L30,80 M70,20 L70,80 M50,20 L50,80" stroke="var(--primary-gold)"
+                    stroke-width="8" fill="none" stroke-linecap="round" />
+            </svg>
+            حبايبنا
         </a>
 
         <ul class="nav-links">

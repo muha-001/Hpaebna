@@ -122,6 +122,9 @@ window.onload = () => {
     renderGallery();
     initRevealAnimations();
     initParallax();
+    initWebGLBackground(); // Advanced WebGL
+    initScrollytelling(); // Advanced GSAP
+    initLogoMorph(); // Advanced SVG Morph
 };
 
 function setupEventListeners() {
@@ -227,6 +230,7 @@ function renderMenu(filter = 'eastern') {
     // Refresh animations for new items
     initRevealAnimations();
     setupMagneticButtons();
+    applyDepthEffect();
 }
 
 function handleSearch() {
@@ -505,29 +509,165 @@ function renderGallery() {
 
 // === New Visual Effects Logic ===
 function initRevealAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
+    gsap.registerPlugin(ScrollTrigger);
 
-    document.querySelectorAll('.dish-card, .section-title, .gallery-item, .review-card, .hero-content').forEach(el => {
-        observer.observe(el);
+    gsap.utils.toArray('.section-title').forEach(el => {
+        gsap.from(el, {
+            scrollTrigger: {
+                trigger: el,
+                start: "top 90%",
+                toggleActions: "play none none reverse"
+            },
+            opacity: 0,
+            y: 50,
+            duration: 1.2,
+            ease: "expo.out"
+        });
     });
 }
 
+function initScrollytelling() {
+    // Cinematic Hero Animation
+    gsap.timeline()
+        .from('.hero-title', { opacity: 0, y: 100, duration: 1.5, ease: "power4.out" })
+        .from('.hero-subtitle', { opacity: 0, y: 50, duration: 1.2, ease: "power3.out" }, "-=1")
+        .from('.hero-content .btn', { opacity: 0, x: -50, stagger: 0.2, duration: 1, ease: "power2.out" }, "-=0.8");
+
+    // Scroll-based parallax for menu grid
+    gsap.to('.menu-grid', {
+        scrollTrigger: {
+            trigger: '.menu-grid',
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1
+        },
+        y: -50,
+        ease: "none"
+    });
+}
+
+function initWebGLBackground() {
+    const container = document.getElementById('webgl-bg');
+    if (!container) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            uTime: { value: 0 },
+            uMouse: { value: new THREE.Vector2(0, 0) },
+            uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform float uTime;
+            uniform vec2 uMouse;
+            uniform vec2 uResolution;
+            varying vec2 vUv;
+
+            void main() {
+                vec2 uv = vUv;
+                float dist = distance(uv, uMouse);
+                
+                // Animated Gold Fluid
+                float wave = sin(uv.x * 10.0 + uTime) * 0.5 + 0.5;
+                float wave2 = cos(uv.y * 8.0 - uTime * 0.5) * 0.5 + 0.5;
+                
+                vec3 gold = vec3(0.83, 0.69, 0.22); // Primary Gold
+                vec3 darkGold = vec3(0.4, 0.3, 0.1);
+                
+                float mask = smoothstep(0.4 + 0.1 * wave, 0.0, dist);
+                vec3 color = mix(darkGold, gold, wave * wave2 + mask);
+                
+                gl_FragColor = vec4(color, 0.05 + 0.05 * mask); // Subtle overlay
+            }
+        `,
+        transparent: true
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+    camera.position.z = 1;
+
+    window.addEventListener('mousemove', (e) => {
+        material.uniforms.uMouse.value.x = e.clientX / window.innerWidth;
+        material.uniforms.uMouse.value.y = 1.0 - (e.clientY / window.innerHeight);
+    });
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+    });
+
+    function animate() {
+        requestAnimationFrame(animate);
+        material.uniforms.uTime.value += 0.01;
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+
 function initParallax() {
-    window.addEventListener('scroll', () => {
-        const scrolled = window.scrollY;
-        // Hero Parallax
-        const heroContent = document.querySelector('.hero-content');
-        if (heroContent) {
-            heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
-            heroContent.style.opacity = 1 - (scrolled / 700);
-        }
+    // Handled by GSAP and WebGL
+}
+
+function initLogoMorph() {
+    const path = document.getElementById('logo-path');
+    if (!path) return;
+
+    const utensilsPath = "M30,20 L30,80 M70,20 L70,80 M50,20 L50,80";
+    const hatPath = "M20,80 C20,80 80,80 80,80 C80,60 70,60 70,50 C70,30 30,30 30,50 C30,60 20,60 20,80";
+
+    setInterval(() => {
+        gsap.to(path, {
+            attr: { d: path.getAttribute('d') === utensilsPath ? hatPath : utensilsPath },
+            duration: 2,
+            ease: "elastic.out(1, 0.3)"
+        });
+    }, 4000);
+}
+
+function applyDepthEffect() {
+    document.querySelectorAll('.dish-img-container').forEach(container => {
+        const img = container.querySelector('img');
+        container.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+            gsap.to(img, {
+                x: x * 30,
+                y: y * 30,
+                scale: 1.15,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+        });
+
+        container.addEventListener('mouseleave', () => {
+            gsap.to(img, {
+                x: 0,
+                y: 0,
+                scale: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+        });
     });
 }
 
@@ -546,10 +686,8 @@ function setupMagneticButtons() {
 }
 
 function enhanceExplosion(particle, destX, destY) {
-    // Add physics jitter
     const jitterX = (Math.random() - 0.5) * 50;
     const jitterY = (Math.random() - 0.5) * 50;
-
     setTimeout(() => {
         particle.style.transform = `translate(${destX + jitterX}px, ${destY + jitterY}px) rotate(${Math.random() * 360}deg)`;
     }, 100);
