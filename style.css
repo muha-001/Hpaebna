@@ -1,16 +1,13 @@
 /* === متغيرات الألوان والتصميم === */
 :root {
     --primary-gold: #D4AF37;
-    --dark-gold: #B8941F;
-    --dark-brown: #3E2723;
-    --light-brown: #5D4037;
-    --cream-bg: #FFF8E1;
-    --light-cream: #FFFCF5;
-    --text-color: #2c2c2c;
-    --overlay-dark: rgba(20, 10, 5, 0.85);
-    --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    --neu-light: #ffffff;
-    --neu-shadow: #e0d9c6;
+    --dark-gold: #C5A028;
+    --midnight: #0A0A0A;
+    --deep-grey: #1A1A1A;
+    --soft-gold: rgba(212, 175, 55, 0.2);
+    --text-white: #FFFFFF;
+    --text-grey: #A0A0A0;
+    --transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 * {
@@ -35,8 +32,8 @@ html {
 
 body {
     font-family: 'Cairo', sans-serif;
-    background-color: var(--cream-bg);
-    color: var(--text-color);
+    background-color: var(--midnight);
+    color: var(--text-white);
     overflow-x: hidden;
 }
 
@@ -136,7 +133,7 @@ nav {
     top: -8px;
     right: -8px;
     background-color: var(--primary-gold);
-    color: var(--dark-brown);
+    color: var(--midnight);
     font-size: 0.75rem;
     font-weight: bold;
     width: 18px;
@@ -188,22 +185,25 @@ header {
 }
 
 .btn {
-    padding: 12px 35px;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: var(--transition);
-    border: 2px solid var(--primary-gold);
+    padding: 12px 25px;
+    border-radius: 12px;
+    border: 1px solid var(--soft-gold);
     background: transparent;
     color: var(--primary-gold);
-    font-family: 'Cairo', sans-serif;
-    margin: 5px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.btn:active {
+    transform: scale(0.95);
+    background: var(--soft-gold);
 }
 
 .btn.primary {
     background: var(--primary-gold);
-    color: var(--dark-brown);
+    color: var(--midnight);
+    border: none;
 }
 
 .btn:hover {
@@ -219,13 +219,13 @@ header {
 /* === قسم القائمة === */
 .menu-section {
     padding: 100px 5%;
-    background-color: var(--cream-bg);
+    background-color: var(--midnight);
 }
 
 .section-title {
     text-align: center;
     font-size: 2.5rem;
-    color: var(--dark-brown);
+    color: var(--primary-gold);
     margin-bottom: 50px;
 }
 
@@ -240,7 +240,7 @@ header {
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--dark-brown);
+    color: var(--text-grey);
 }
 
 #menuSearch {
@@ -250,6 +250,9 @@ header {
     border: 1px solid #ddd;
     font-family: 'Cairo', sans-serif;
     font-size: 1rem;
+    background-color: var(--deep-grey);
+    color: var(--text-white);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 [dir="ltr"] .search-icon {
@@ -270,8 +273,9 @@ header {
 }
 
 .tab-btn {
-    background: #fff;
-    border: none;
+    background: var(--deep-grey);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-white);
     padding: 10px 25px;
     border-radius: 25px;
     font-size: 1rem;
@@ -281,8 +285,9 @@ header {
 }
 
 .tab-btn.active {
-    background: var(--dark-brown);
-    color: var(--primary-gold);
+    background: var(--primary-gold);
+    color: var(--midnight);
+    border-color: var(--primary-gold);
 }
 
 .menu-grid {
@@ -292,18 +297,18 @@ header {
 }
 
 .dish-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(212, 175, 55, 0.15);
-    border-radius: 20px;
+    background: var(--deep-grey);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 15px 15px 40px var(--neu-shadow),
-        -15px -15px 40px var(--neu-light);
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease;
     opacity: 1;
     /* Safety: visible by default */
-    will-change: transform, opacity;
+    will-change: transform;
+}
+
+.dish-card:hover {
+    border-color: var(--primary-gold);
 }
 
 .reveal-hidden {
@@ -334,12 +339,12 @@ header {
 
 .dish-title {
     font-size: 1.2rem;
-    color: var(--dark-brown);
+    color: var(--text-white);
     margin-bottom: 5px;
 }
 
 .dish-desc {
-    color: #666;
+    color: var(--text-grey);
     font-size: 0.9rem;
     margin-bottom: 15px;
     height: 40px;
@@ -355,12 +360,12 @@ header {
 .price {
     font-size: 1.1rem;
     font-weight: bold;
-    color: var(--dark-brown);
+    color: var(--primary-gold);
 }
 
 .add-btn {
     background: var(--primary-gold);
-    color: var(--dark-brown);
+    color: var(--midnight);
     border: none;
     width: 35px;
     height: 35px;
@@ -374,7 +379,7 @@ header {
 }
 
 .add-btn:hover {
-    background: var(--dark-brown);
+    background: var(--midnight);
     color: var(--primary-gold);
 }
 
@@ -382,7 +387,7 @@ header {
 .gallery-section,
 .reviews-section {
     padding: 80px 5%;
-    background: var(--light-cream);
+    background: var(--deep-grey);
 }
 
 .gallery-grid {
@@ -415,10 +420,11 @@ header {
 }
 
 .review-card {
-    background: #fff;
+    background: var(--midnight);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* === المودال (التفجير) === */
@@ -550,7 +556,7 @@ header {
 .summary-total {
     font-weight: bold;
     font-size: 1.2rem;
-    color: var(--dark-brown);
+    color: var(--primary-gold);
     border-top: 1px solid #eee;
     padding-top: 10px;
 }
@@ -603,7 +609,7 @@ header {
 }
 
 .toast {
-    background: var(--dark-brown);
+    background: var(--midnight);
     color: var(--primary-gold);
     padding: 15px 25px;
     border-radius: 10px;
@@ -639,8 +645,46 @@ header {
     }
 }
 
-/* === Mobile Responsive === */
+/* === Floating Status Pill (Repositioned) === */
+#store-status-banner {
+    position: fixed;
+    top: 95px;
+    /* Just below nav */
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: var(--transition);
+}
+
+.status-pill.status-open {
+    border-left: 4px solid #2ecc71;
+    color: #2ecc71;
+}
+
+.status-pill.status-closed {
+    border-left: 4px solid #e74c3c;
+    color: #e74c3c;
+}
+
 @media (max-width: 768px) {
+    #store-status-banner {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        left: auto;
+        transform: none;
+    }
+
     nav {
         padding: 10px 20px;
     }
@@ -656,7 +700,7 @@ header {
         top: 80px;
         left: 0;
         width: 100%;
-        background: var(--dark-brown);
+        background: var(--midnight);
         padding: 20px;
     }
 

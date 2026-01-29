@@ -357,51 +357,58 @@ function openExplosionModal(itemId) {
     title.innerText = currentLang === 'ar' ? item.name : item.name_en;
     modal.classList.add('active');
 
-    // Start Shake
-    const mainDish = document.getElementById('mainDishView');
-    mainDish.style.animation = 'shake 0.5s infinite';
+    gsap.to(mainDish, {
+        scale: 1.1,
+        duration: 0.4,
+        yoyo: true,
+        repeat: 1,
+        ease: "power2.inOut",
+        onComplete: () => {
+            if (explosionActiveId !== itemId) return;
+            
+            const radius = window.innerWidth < 768 ? 130 : 220;
+            const tl = gsap.timeline();
 
-    setTimeout(() => {
-        if (explosionActiveId !== itemId) return;
-        mainDish.style.animation = 'none';
+            item.ingredients.forEach((ing, i) => {
+                const particle = document.createElement('div');
+                particle.className = 'ingredient-particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    font-size: 2.5rem;
+                    opacity: 0;
+                    z-index: 15;
+                    pointer-events: none;
+                `;
+                particle.innerText = ing.i;
+                container.appendChild(particle);
 
-        const radius = window.innerWidth < 768 ? 120 : 200;
+                const angle = (i * (360 / item.ingredients.length)) * (Math.PI / 180);
+                const destX = Math.cos(angle) * radius;
+                const destY = Math.sin(angle) * radius;
 
-        item.ingredients.forEach((ing, i) => {
-            const particle = document.createElement('div');
-            particle.className = 'ingredient-particle';
-            particle.innerText = ing.i;
-            container.appendChild(particle);
+                // Enhanced GSAP Explosion
+                tl.to(particle, {
+                    x: destX,
+                    y: destY,
+                    opacity: 1,
+                    scale: 1.2,
+                    rotation: Math.random() * 720,
+                    duration: 0.8,
+                    ease: "expo.out"
+                }, 0);
 
-            const angle = (i * (360 / item.ingredients.length)) * (Math.PI / 180);
-            const destX = Math.cos(angle) * radius;
-            const destY = Math.sin(angle) * radius;
+                tl.to(particle, {
+                    opacity: 0,
+                    scale: 0.5,
+                    y: destY + 50,
+                    duration: 0.6,
+                    ease: "power2.in"
+                }, 1.2);
+            });
 
-            // Step 1: Explode Out
-            setTimeout(() => {
-                particle.style.opacity = '1';
-                enhanceExplosion(particle, destX, destY); // Use enhanced physics
-            }, 50);
-
-            // Step 2: Fade out particles as the list prepares to show
-            setTimeout(() => {
-                particle.style.opacity = '0';
-                particle.style.transform = `translate(${destX * 1.2}px, ${destY * 1.2}px) scale(0.5)`;
-            }, 1000);
-
-            panel.innerHTML += `
-                <div class="ingredient-item">
-                    <div style="font-size: 2rem;">${ing.i}</div>
-                    <div style="font-size: 0.9rem;">${currentLang === 'ar' ? ing.n : ing.n}</div>
-                </div>
-            `;
-        });
-
-        // Step 3: Show the detailed list panel
-        setTimeout(() => {
-            if (explosionActiveId === itemId) panel.classList.add('show');
-        }, 1200);
-    }, 600);
+            tl.add(() => panel.classList.add('show'), 1.3);
+        }
+    });
 }
 
 function closeModal() {
@@ -481,8 +488,8 @@ function checkStoreStatus() {
 
     statusBanner.className = isOpen ? 'status-pill status-open' : 'status-pill status-closed';
     statusBanner.innerHTML = `
-        <div class="status-dot"></div>
-        <span>${isOpen ? (currentLang === 'ar' ? 'مفتوح الآن' : 'Open Now') : (currentLang === 'ar' ? 'مغلق حالياً' : 'Currently Closed')}</span>
+        <i class="fas ${isOpen ? 'fa-clock' : 'fa-moon'}"></i>
+        <span>${isOpen ? (currentLang === 'ar' ? 'المطعم مفتوح الآن' : 'Restaurant Open') : (currentLang === 'ar' ? 'المطعم مغلق حالياً' : 'Restaurant Closed')}</span>
     `;
 }
 
