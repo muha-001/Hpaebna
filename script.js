@@ -116,15 +116,19 @@ const menuItems = [
 
 // === Global Init ===
 window.onload = () => {
-    updateLanguage();
-    setupEventListeners();
-    checkStoreStatus();
-    renderGallery();
-    initRevealAnimations();
-    initParallax();
-    initWebGLBackground(); // Advanced WebGL
-    initScrollytelling(); // Advanced GSAP
-    initLogoMorph(); // Advanced SVG Morph
+    try {
+        updateLanguage();
+        setupEventListeners();
+        checkStoreStatus();
+        renderGallery();
+        initRevealAnimations();
+        initParallax();
+        initWebGLBackground(); // Advanced WebGL
+        initScrollytelling(); // Advanced GSAP
+        initLogoMorph(); // Advanced SVG Morph
+    } catch (e) {
+        console.error("Initialization error:", e);
+    }
 };
 
 function setupEventListeners() {
@@ -187,7 +191,7 @@ function renderMenu(filter = 'eastern') {
 
     filteredItems.forEach((item, index) => {
         const card = document.createElement('div');
-        card.className = 'dish-card reveal-item';
+        card.className = 'dish-card reveal-hidden'; // Use specific hidden class
         card.style.animationDelay = `${index * 0.05}s`;
 
         const name = currentLang === 'ar' ? item.name : item.name_en;
@@ -231,6 +235,7 @@ function renderMenu(filter = 'eastern') {
     initRevealAnimations();
     setupMagneticButtons();
     applyDepthEffect();
+    ScrollTrigger.refresh(); // Crucial for dynamic content
 }
 
 function handleSearch() {
@@ -550,78 +555,101 @@ function initScrollytelling() {
 
 function initWebGLBackground() {
     const container = document.getElementById('webgl-bg');
-    if (!container) return;
+    if (!container || typeof THREE === 'undefined') return;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    try {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
-
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const material = new THREE.ShaderMaterial({
-        uniforms: {
-            uTime: { value: 0 },
-            uMouse: { value: new THREE.Vector2(0, 0) },
-            uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-        },
-        vertexShader: `
-            varying vec2 vUv;
-            void main() {
-                vUv = uv;
-                gl_Position = vec4(position, 1.0);
-            }
-        `,
-        fragmentShader: `
-            uniform float uTime;
-            uniform vec2 uMouse;
-            uniform vec2 uResolution;
-            varying vec2 vUv;
-
-            void main() {
-                vec2 uv = vUv;
-                float dist = distance(uv, uMouse);
-                
-                // Animated Gold Fluid
-                float wave = sin(uv.x * 10.0 + uTime) * 0.5 + 0.5;
-                float wave2 = cos(uv.y * 8.0 - uTime * 0.5) * 0.5 + 0.5;
-                
-                vec3 gold = vec3(0.83, 0.69, 0.22); // Primary Gold
-                vec3 darkGold = vec3(0.4, 0.3, 0.1);
-                
-                float mask = smoothstep(0.4 + 0.1 * wave, 0.0, dist);
-                vec3 color = mix(darkGold, gold, wave * wave2 + mask);
-                
-                gl_FragColor = vec4(color, 0.05 + 0.05 * mask); // Subtle overlay
-            }
-        `,
-        transparent: true
-    });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-    camera.position.z = 1;
-
-    window.addEventListener('mousemove', (e) => {
-        material.uniforms.uMouse.value.x = e.clientX / window.innerWidth;
-        material.uniforms.uMouse.value.y = 1.0 - (e.clientY / window.innerHeight);
-    });
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-    });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
 
-    function animate() {
-        requestAnimationFrame(animate);
-        material.uniforms.uTime.value += 0.01;
-        renderer.render(scene, camera);
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 },
+                uMouse: { value: new THREE.Vector2(0, 0) },
+                uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float uTime;
+                uniform vec2 uMouse;
+                uniform vec2 uResolution;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 uv = vUv;
+                    float dist = distance(uv, uMouse);
+                    
+                    float wave = sin(uv.x * 10.0 + uTime) * 0.5 + 0.5;
+                    float wave2 = cos(uv.y * 8.0 - uTime * 0.5) * 0.5 + 0.5;
+                    
+                    vec3 gold = vec3(0.83, 0.69, 0.22);
+                    vec3 darkGold = vec3(0.4, 0.3, 0.1);
+                    
+                    float mask = smoothstep(0.4 + 0.1 * wave, 0.0, dist);
+                    vec3 color = mix(darkGold, gold, wave * wave2 + mask);
+                    
+                    gl_FragColor = vec4(color, 0.05 + 0.05 * mask);
+                }
+            `,
+            transparent: true
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        camera.position.z = 1;
+
+        window.addEventListener('mousemove', (e) => {
+            material.uniforms.uMouse.value.x = e.clientX / window.innerWidth;
+            material.uniforms.uMouse.value.y = 1.0 - (e.clientY / window.innerHeight);
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            material.uniforms.uTime.value += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+    } catch (e) {
+        console.warn("WebGL Init failed:", e);
     }
-    animate();
+}
+
+function initRevealAnimations() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray('.section-title, .dish-card, .gallery-item, .review-card, .hero-content').forEach(el => {
+        gsap.to(el, {
+            scrollTrigger: {
+                trigger: el,
+                start: "top 95%",
+                toggleActions: "play none none reverse"
+            },
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            ease: "power2.out"
+        });
+    });
 }
 
 function initParallax() {
@@ -630,7 +658,7 @@ function initParallax() {
 
 function initLogoMorph() {
     const path = document.getElementById('logo-path');
-    if (!path) return;
+    if (!path || typeof gsap === 'undefined') return;
 
     const utensilsPath = "M30,20 L30,80 M70,20 L70,80 M50,20 L50,80";
     const hatPath = "M20,80 C20,80 80,80 80,80 C80,60 70,60 70,50 C70,30 30,30 30,50 C30,60 20,60 20,80";
@@ -645,6 +673,7 @@ function initLogoMorph() {
 }
 
 function applyDepthEffect() {
+    if (typeof gsap === 'undefined') return;
     document.querySelectorAll('.dish-img-container').forEach(container => {
         const img = container.querySelector('img');
         container.addEventListener('mousemove', (e) => {
@@ -671,26 +700,4 @@ function applyDepthEffect() {
             });
         });
     });
-}
-
-function setupMagneticButtons() {
-    document.querySelectorAll('.magnetic').forEach(btn => {
-        btn.addEventListener('mousemove', (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-        });
-        btn.addEventListener('mouseleave', () => {
-            btn.style.transform = `translate(0, 0)`;
-        });
-    });
-}
-
-function enhanceExplosion(particle, destX, destY) {
-    const jitterX = (Math.random() - 0.5) * 50;
-    const jitterY = (Math.random() - 0.5) * 50;
-    setTimeout(() => {
-        particle.style.transform = `translate(${destX + jitterX}px, ${destY + jitterY}px) rotate(${Math.random() * 360}deg)`;
-    }, 100);
 }
