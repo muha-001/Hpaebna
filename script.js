@@ -511,15 +511,17 @@ function renderGallery() {
 function initRevealAnimations() {
     gsap.registerPlugin(ScrollTrigger);
 
-    gsap.utils.toArray('.section-title').forEach(el => {
-        gsap.from(el, {
+    // Target all revealable elements
+    gsap.utils.toArray('.section-title, .dish-card, .gallery-item, .review-card, .hero-content').forEach(el => {
+        gsap.to(el, {
             scrollTrigger: {
                 trigger: el,
                 start: "top 90%",
                 toggleActions: "play none none reverse"
             },
-            opacity: 0,
-            y: 50,
+            opacity: 1,
+            y: 0,
+            scale: 1,
             duration: 1.2,
             ease: "expo.out"
         });
