@@ -115,17 +115,24 @@ const menuItems = [
 ];
 
 // === Global Init ===
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isLowEnd = isMobile && (navigator.hardwareConcurrency < 4 || !window.WebGLRenderingContext);
+
 window.onload = () => {
     try {
+        if (isLowEnd) document.body.classList.add('lite-mode');
+
         updateLanguage();
         setupEventListeners();
         checkStoreStatus();
         renderGallery();
         initRevealAnimations();
         initParallax();
-        initWebGLBackground(); // Advanced WebGL
-        initScrollytelling(); // Advanced GSAP
-        initLogoMorph(); // Advanced SVG Morph
+        if (!isLowEnd) {
+            initWebGLBackground();
+            initScrollytelling();
+            initLogoMorph();
+        }
     } catch (e) {
         console.error("Initialization error:", e);
     }
@@ -469,11 +476,14 @@ function checkStoreStatus() {
 
     const statusBanner = document.getElementById('store-status-banner') || (() => {
         const d = document.createElement('div'); d.id = 'store-status-banner';
-        document.body.prepend(d); return d;
+        document.body.appendChild(d); return d;
     })();
 
-    statusBanner.className = isOpen ? 'status-open' : 'status-closed';
-    statusBanner.innerText = isOpen ? translations[currentLang].status_open : translations[currentLang].status_closed;
+    statusBanner.className = isOpen ? 'status-pill status-open' : 'status-pill status-closed';
+    statusBanner.innerHTML = `
+        <div class="status-dot"></div>
+        <span>${isOpen ? (currentLang === 'ar' ? 'مفتوح الآن' : 'Open Now') : (currentLang === 'ar' ? 'مغلق حالياً' : 'Currently Closed')}</span>
+    `;
 }
 
 function showToast(message) {
@@ -636,6 +646,10 @@ function initRevealAnimations() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     gsap.registerPlugin(ScrollTrigger);
 
+    if (isLowEnd) {
+        document.querySelectorAll('.dish-card, .section-title').forEach(el => el.style.opacity = '1');
+        return;
+    }
     gsap.utils.toArray('.section-title, .dish-card, .gallery-item, .review-card, .hero-content').forEach(el => {
         gsap.to(el, {
             scrollTrigger: {
