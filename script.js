@@ -219,9 +219,9 @@ function renderMenu(filter = 'eastern') {
             const y = e.clientY - rect.top;
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            const rotateX = (centerY - y) / 10;
-            const rotateY = (x - centerX) / 10;
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            const rotateX = (centerY - y) / 25; // More subtle (changed from 10)
+            const rotateY = (x - centerX) / 25; // More subtle
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
         };
 
         card.onmouseleave = () => {
@@ -521,14 +521,13 @@ function initRevealAnimations() {
         gsap.to(el, {
             scrollTrigger: {
                 trigger: el,
-                start: "top 90%",
+                start: "top 95%",
                 toggleActions: "play none none reverse"
             },
             opacity: 1,
             y: 0,
-            scale: 1,
-            duration: 1.2,
-            ease: "expo.out"
+            duration: 0.8,
+            ease: "power2.out"
         });
     });
 }
