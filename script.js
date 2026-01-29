@@ -120,6 +120,8 @@ window.onload = () => {
     setupEventListeners();
     checkStoreStatus();
     renderGallery();
+    initRevealAnimations();
+    initParallax();
 };
 
 function setupEventListeners() {
@@ -182,7 +184,7 @@ function renderMenu(filter = 'eastern') {
 
     filteredItems.forEach((item, index) => {
         const card = document.createElement('div');
-        card.className = 'dish-card';
+        card.className = 'dish-card reveal-item';
         card.style.animationDelay = `${index * 0.05}s`;
 
         const name = currentLang === 'ar' ? item.name : item.name_en;
@@ -190,6 +192,7 @@ function renderMenu(filter = 'eastern') {
 
         card.innerHTML = `
             <div class="dish-img-container" onclick="openExplosionModal(${item.id})">
+                <div class="steam-container">${Array(3).fill('<div class="steam-particle"></div>').join('')}</div>
                 <img src="${item.img}" alt="${name}" class="dish-img" loading="lazy">
             </div>
             <div class="dish-info">
@@ -197,12 +200,33 @@ function renderMenu(filter = 'eastern') {
                 <p class="dish-desc">${desc}</p>
                 <div class="dish-footer">
                     <span class="price">${item.price} <small>${translations[currentLang].currency}</small></span>
-                    <button class="add-btn" onclick="addToCart(${item.id})"><i class="fas fa-plus"></i></button>
+                    <button class="add-btn magnetic" onclick="addToCart(${item.id})"><i class="fas fa-plus"></i></button>
                 </div>
             </div>
         `;
+
+        // 3D Tilt Effect
+        card.onmousemove = (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (centerY - y) / 10;
+            const rotateY = (x - centerX) / 10;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        };
+
+        card.onmouseleave = () => {
+            card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+        };
+
         grid.appendChild(card);
     });
+
+    // Refresh animations for new items
+    initRevealAnimations();
+    setupMagneticButtons();
 }
 
 function handleSearch() {
@@ -339,7 +363,7 @@ function openExplosionModal(itemId) {
             // Step 1: Explode Out
             setTimeout(() => {
                 particle.style.opacity = '1';
-                particle.style.transform = `translate(${destX}px, ${destY}px)`;
+                enhanceExplosion(particle, destX, destY); // Use enhanced physics
             }, 50);
 
             // Step 2: Fade out particles as the list prepares to show
@@ -479,12 +503,54 @@ function renderGallery() {
     `).join('');
 }
 
-function scrollToMenu(cat) {
-    document.getElementById('menu').scrollIntoView();
-    const btn = document.querySelector(`.tab-btn[data-category="${cat}"]`);
-    if (btn) btn.click();
+// === New Visual Effects Logic ===
+function initRevealAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('reveal');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.dish-card, .section-title, .gallery-item, .review-card, .hero-content').forEach(el => {
+        observer.observe(el);
+    });
 }
 
-function toggleMenu() {
-    document.querySelector('.nav-links').classList.toggle('active');
+function initParallax() {
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        // Hero Parallax
+        const heroContent = document.querySelector('.hero-content');
+        if (heroContent) {
+            heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+            heroContent.style.opacity = 1 - (scrolled / 700);
+        }
+    });
+}
+
+function setupMagneticButtons() {
+    document.querySelectorAll('.magnetic').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = `translate(0, 0)`;
+        });
+    });
+}
+
+function enhanceExplosion(particle, destX, destY) {
+    // Add physics jitter
+    const jitterX = (Math.random() - 0.5) * 50;
+    const jitterY = (Math.random() - 0.5) * 50;
+
+    setTimeout(() => {
+        particle.style.transform = `translate(${destX + jitterX}px, ${destY + jitterY}px) rotate(${Math.random() * 360}deg)`;
+    }, 100);
 }
