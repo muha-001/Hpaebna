@@ -17,7 +17,16 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    /* Smooth touch on iOS */
     outline: none;
+}
+
+html,
+body {
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+    width: 100%;
 }
 
 html {
@@ -286,6 +295,7 @@ header {
 .dish-card {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(212, 175, 55, 0.15);
     border-radius: 20px;
     overflow: hidden;

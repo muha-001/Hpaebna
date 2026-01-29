@@ -213,7 +213,8 @@ function renderMenu(filter = 'eastern') {
         `;
 
         // 3D Tilt Effect
-        card.onmousemove = (e) => {
+        card.onpointermove = (e) => {
+            if (e.pointerType === 'touch') return; // Disable tilt on touch for performance
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -608,7 +609,7 @@ function initWebGLBackground() {
         scene.add(mesh);
         camera.position.z = 1;
 
-        window.addEventListener('mousemove', (e) => {
+        window.addEventListener('pointermove', (e) => {
             material.uniforms.uMouse.value.x = e.clientX / window.innerWidth;
             material.uniforms.uMouse.value.y = 1.0 - (e.clientY / window.innerHeight);
         });
@@ -675,7 +676,8 @@ function applyDepthEffect() {
     if (typeof gsap === 'undefined') return;
     document.querySelectorAll('.dish-img-container').forEach(container => {
         const img = container.querySelector('img');
-        container.addEventListener('mousemove', (e) => {
+        container.addEventListener('pointermove', (e) => {
+            if (e.pointerType === 'touch') return;
             const rect = container.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width - 0.5;
             const y = (e.clientY - rect.top) / rect.height - 0.5;

@@ -1,15 +1,10 @@
 const CACHE_NAME = 'habaibna-v1';
 const assets = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/script.js',
-    '/assets/favicon.svg',
-    '/assets/mansaf.png',
-    '/assets/kebab.png',
-    '/assets/quzi.png',
-    '/assets/dolma.png',
-    '/assets/masgouf.png'
+    './',
+    './index.html',
+    './style.css',
+    './script.js',
+    './assets/favicon.svg'
 ];
 
 self.addEventListener('install', event => {
